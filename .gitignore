@@ -1,0 +1,34 @@
+.dart_tool/
+.packages
+.pub/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+android/.gradle/
+android/local.properties
+android/key.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# App Factory workspace
+input/
+output/
+.env
+.env.*
+!*.example
+
+# Signing / service configuration
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
