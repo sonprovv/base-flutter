@@ -1,0 +1,32 @@
+﻿{
+    "code": 200,
+    "data": {
+        "functions": [
+            {
+                "id": 1,
+                "points": 3,
+                "name": "Future Baby",
+                "images_type": 1
+            },
+            {
+                "id": 3,
+                "points": 3,
+                "name": "Future Family",
+                "images_type": 1
+            },
+            {
+                "id": 2,
+                "points": 3,
+                "name": "Family Similarity",
+                "images_type": 5
+            },
+            {
+                "id": 4,
+                "points": 3,
+                "name": "Ultrasound Viewer",
+                "images_type": 2
+            }
+        ]
+    },
+    "msg": "success"
+}

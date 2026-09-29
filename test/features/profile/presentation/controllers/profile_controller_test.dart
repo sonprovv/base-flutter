@@ -1,33 +1,33 @@
-import 'package:flutter_app_factory_base/core/result/result.dart';
-import 'package:flutter_app_factory_base/features/profile/domain/entities/profile.dart';
-import 'package:flutter_app_factory_base/features/profile/domain/repositories/profile_repository.dart';
-import 'package:flutter_app_factory_base/features/profile/domain/usecases/get_profile.dart';
-import 'package:flutter_app_factory_base/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_app_factory_base/data/models/profile_work.dart';
+import 'package:flutter_app_factory_base/data/repositories/baby_data_repository.dart';
+import 'package:flutter_app_factory_base/features/profile/presentation/view_models/profile_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockProfileRepository extends Mock implements ProfileRepository {}
+class _MockBabyDataRepository extends Mock implements BabyDataRepository {}
 
 void main() {
-  test('controller exposes profile from use case', () async {
-    final repository = _MockProfileRepository();
-    const expected = Profile(
-      id: 1,
-      name: 'Ada Lovelace',
-      email: 'ada@example.com',
-    );
+  test('profile view model loads profile works', () async {
+    final repository = _MockBabyDataRepository();
+    final expectedWorks = [
+      const ProfileWork(
+        id: 1,
+        name: 'Work 1',
+        type: 'photo',
+      ),
+    ];
 
-    when(repository.getProfile).thenAnswer((_) async => const Success(expected));
+    when(repository.getProfileWorks).thenAnswer((_) async => expectedWorks);
 
     final container = ProviderContainer(
       overrides: [
-        getProfileProvider.overrideWithValue(GetProfile(repository)),
+        babyDataRepositoryProvider.overrideWithValue(repository),
       ],
     );
     addTearDown(container.dispose);
 
-    final value = await container.read(profileControllerProvider.future);
-    expect(value, expected);
+    final state = await container.read(profileViewModelProvider.future);
+    expect(state.works, expectedWorks);
   });
 }

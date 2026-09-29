@@ -1,0 +1,32 @@
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "headline": "Unlock all features",
+    "benefits": [
+      "Customize your AI baby",
+      "Get advanced face analysis",
+      "Discover similarity scores"
+    ],
+    "plans": [
+      {
+        "id": "vip_trial_3days",
+        "name": "3-Day Full Access",
+        "price": "1.300đ",
+        "subtitle": "Then 517.000đ/week",
+        "note": "150 Points/3-day. Then 400 Points/week. Auto renew. Cancel anytime.",
+        "is_trial": true,
+        "is_selected": true
+      },
+      {
+        "id": "vip_lifetime",
+        "name": "Lifetime Access",
+        "price": "788.000đ",
+        "subtitle": "One-time payment",
+        "note": "Unlimited generations forever.",
+        "is_trial": false,
+        "is_selected": false
+      }
+    ]
+  }
+}

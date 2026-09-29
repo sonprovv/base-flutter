@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_app_factory_base/core/config/app_config.dart';
 import 'package:flutter_app_factory_base/core/config/providers.dart';
 import 'package:flutter_app_factory_base/core/error/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,6 +58,7 @@ AppException mapDioException(DioException error) {
       return NetworkException('Request was cancelled', cause: error);
     case DioExceptionType.badResponse:
     case DioExceptionType.unknown:
+    default:
       return UnknownException('Unexpected network error', cause: error);
   }
 }

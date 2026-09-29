@@ -66,6 +66,24 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(AppMetrics.radiusL),
         ),
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textHint,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: AppColors.primary,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: 11,
+          color: AppColors.textHint,
+        ),
+      ),
     );
   }
 

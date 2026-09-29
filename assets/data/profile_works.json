@@ -1,0 +1,42 @@
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "works": [
+      {
+        "id": 1001,
+        "name": "Sunny Beats Dance",
+        "type": "video",
+        "cover_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/cover/324.jpg",
+        "media_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/324.mp4",
+        "preview_webp_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/preview/324.webp",
+        "created_at": "2026-09-28 15:30"
+      },
+      {
+        "id": 1002,
+        "name": "Tiny Tradition Photo",
+        "type": "photo",
+        "cover_url": "https://cnd1.fumaomao.cc/app/babygenie/photo/435.jpg",
+        "media_url": "https://cnd1.fumaomao.cc/app/babygenie/photo/435.jpg",
+        "created_at": "2026-09-28 14:15"
+      },
+      {
+        "id": 1003,
+        "name": "Goddess Grace Photo",
+        "type": "photo",
+        "cover_url": "https://cnd1.fumaomao.cc/app/babygenie/photo/433.jpg",
+        "media_url": "https://cnd1.fumaomao.cc/app/babygenie/photo/433.jpg",
+        "created_at": "2026-09-27 10:20"
+      },
+      {
+        "id": 1004,
+        "name": "Tiny Steps Dance",
+        "type": "video",
+        "cover_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/cover/323.jpg",
+        "media_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/323.mp4",
+        "preview_webp_url": "https://cnd1.fumaomao.cc/app/babygenie/dance/preview/323.webp",
+        "created_at": "2026-09-26 18:45"
+      }
+    ]
+  }
+}
