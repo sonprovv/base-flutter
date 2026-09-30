@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
@@ -118,7 +119,7 @@ class _AskUninstallScreenState extends State<AskUninstallScreen> {
   }
 
   void _confirmUninstall(BuildContext context) {
-    showDialog<void>(
+    unawaited(showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Are you sure?'),
@@ -137,6 +138,6 @@ class _AskUninstallScreenState extends State<AskUninstallScreen> {
           ),
         ],
       ),
-    );
+    ));
   }
 }

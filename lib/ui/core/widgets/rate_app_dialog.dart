@@ -246,7 +246,7 @@ class _Header extends StatelessWidget {
                 width: 20,
                 height: 20,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const Icon(Icons.close, color: AppColors.onPrimary, size: 20),
+                errorBuilder: (_, _, _) => const Icon(Icons.close, color: AppColors.onPrimary, size: 20),
               ),
               padding: const EdgeInsets.all(9),
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
@@ -279,7 +279,7 @@ class _PulsingStarIllustration extends StatelessWidget {
           width: 56,
           height: 56,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const Icon(Icons.star_rounded, size: 56, color: Color(0xFFFFC107)),
+          errorBuilder: (_, _, _) => const Icon(Icons.star_rounded, size: 56, color: Color(0xFFFFC107)),
         ),
       ),
     );

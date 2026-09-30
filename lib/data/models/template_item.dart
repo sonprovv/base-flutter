@@ -18,14 +18,21 @@ class TemplateItem extends Equatable {
   });
 
   factory TemplateItem.fromJson(Map<String, dynamic> json) {
+    final type = json['template_type'] as String? ?? json['type'] as String? ?? 'photo';
+    final rawComp = json['composition'] as String?;
+    final isDance = type == 'dance' ||
+        (json['category'] as String? ?? '').toLowerCase().contains('dance') ||
+        (json['mp4_url'] as String? ?? '').isNotEmpty;
+    final composition = rawComp ?? (isDance ? '' : 'baby_only');
+
     return TemplateItem(
       id: (json['id'] ?? json['template_id'] ?? 0).toString(),
       name: json['name'] as String? ?? '',
       coverUrl: json['cover_url'] as String? ?? '',
-      type: json['template_type'] as String? ?? json['type'] as String? ?? 'photo',
+      type: type,
       originCoverUrl: json['origin_cover_url'] as String? ?? '',
       points: json['points'] as int? ?? 3,
-      composition: json['composition'] as String? ?? 'baby_only',
+      composition: composition,
       previewWebpUrl: json['preview_webp_url'] as String? ?? '',
       previewGifUrl: json['preview_gif_url'] as String? ?? '',
       previewMp4Url: json['preview_mp4_url'] as String? ?? '',

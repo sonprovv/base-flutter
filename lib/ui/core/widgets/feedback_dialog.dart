@@ -64,7 +64,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                       width: 20,
                       height: 20,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.close, color: AppColors.primary, size: 20),
+                      errorBuilder: (_, _, _) => const Icon(Icons.close, color: AppColors.primary, size: 20),
                     ),
                     padding: const EdgeInsets.all(9),
                     constraints: const BoxConstraints(minWidth: 40, minHeight: 40),

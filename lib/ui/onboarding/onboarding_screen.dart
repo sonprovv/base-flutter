@@ -207,7 +207,7 @@ class _HeroPage extends StatelessWidget {
           fit: BoxFit.cover,
           width: size.width,
           height: size.height,
-          errorBuilder: (_, __, ___) =>
+          errorBuilder: (_, _, _) =>
               const ColoredBox(color: Color(0xFF1A1A2E)),
         ),
 

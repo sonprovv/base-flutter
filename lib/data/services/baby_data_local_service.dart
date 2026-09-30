@@ -44,7 +44,8 @@ class BabyDataLocalService {
     final cached = _cache[homeKey];
     if (cached == null) return;
 
-    final cats = cached['data']['category_list'] as List<dynamic>? ?? [];
+    final data = cached['data'] as Map<String, dynamic>?;
+    final cats = data?['category_list'] as List<dynamic>? ?? [];
     final urls = <String>[];
 
     for (final cat in cats.take(3)) {
@@ -69,31 +70,36 @@ class BabyDataLocalService {
 
   Future<List<FeatureItem>> getHomeFunctions() async {
     final json = await _loadJson('assets/data/home_functions.json');
-    final functions = json['data']['functions'] as List<dynamic>? ?? [];
+    final data = json['data'] as Map<String, dynamic>?;
+    final functions = data?['functions'] as List<dynamic>? ?? [];
     return functions.map((e) => FeatureItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<List<CategoryItem>> getHomeRecommends() async {
     final json = await _loadJson('assets/data/home_recommends.json');
-    final list = json['data']['category_list'] as List<dynamic>? ?? [];
+    final data = json['data'] as Map<String, dynamic>?;
+    final list = data?['category_list'] as List<dynamic>? ?? [];
     return list.mapIndexed((i, e) => CategoryItem.fromJson(e as Map<String, dynamic>, isGrid: i == 0)).toList();
   }
 
   Future<List<CategoryItem>> getDanceTemplates() async {
     final json = await _loadJson('assets/data/dance_templates.json');
-    final list = json['data']['category_list'] as List<dynamic>? ?? [];
+    final data = json['data'] as Map<String, dynamic>?;
+    final list = data?['category_list'] as List<dynamic>? ?? [];
     return list.mapIndexed((i, e) => CategoryItem.fromJson(e as Map<String, dynamic>, isGrid: false)).toList();
   }
 
   Future<List<CategoryItem>> getPhotoTemplates() async {
     final json = await _loadJson('assets/data/photo_templates.json');
-    final list = json['data']['category_list'] as List<dynamic>? ?? [];
+    final data = json['data'] as Map<String, dynamic>?;
+    final list = data?['category_list'] as List<dynamic>? ?? [];
     return list.mapIndexed((i, e) => CategoryItem.fromJson(e as Map<String, dynamic>, isGrid: false)).toList();
   }
 
   Future<List<ProfileWork>> getProfileWorks() async {
     final json = await _loadJson('assets/data/profile_works.json');
-    final works = json['data']['works'] as List<dynamic>? ?? [];
+    final data = json['data'] as Map<String, dynamic>?;
+    final works = data?['works'] as List<dynamic>? ?? [];
     return works.map((e) => ProfileWork.fromJson(e as Map<String, dynamic>)).toList();
   }
 

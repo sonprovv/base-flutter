@@ -79,7 +79,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       width: 96,
                       height: 96,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
                     ),
                   ),
                   const SizedBox(height: AppMetrics.spaceM),

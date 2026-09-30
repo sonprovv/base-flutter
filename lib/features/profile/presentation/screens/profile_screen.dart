@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
@@ -63,9 +65,18 @@ class _ProfileContent extends ConsumerWidget {
                     const Spacer(),
                     GestureDetector(
                       onTap: () => context.push(AppRoute.settings),
-                      child: const Icon(
-                        Icons.settings_outlined,
-                        color: AppColors.onBackground,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Image.asset(
+                          'assets/images/ic_profile_setting.png',
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.settings_outlined,
+                            color: AppColors.onBackground,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -81,10 +92,10 @@ class _ProfileContent extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: AppMetrics.profileAvatarSize / 2,
-                      backgroundColor: AppColors.primaryContainer,
+                      backgroundColor: Colors.transparent,
                       child: ClipOval(
                         child: Image.asset(
-                          'assets/images/ic_profile_mine.png',
+                          'assets/images/ic_profile_mine_setting.png',
                           width: AppMetrics.profileAvatarSize,
                           height: AppMetrics.profileAvatarSize,
                           fit: BoxFit.cover,
@@ -121,6 +132,112 @@ class _ProfileContent extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              // VIP Pro Banner
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppMetrics.screenPaddingHorizontal,
+                  AppMetrics.spaceXs,
+                  AppMetrics.screenPaddingHorizontal,
+                  AppMetrics.spaceS,
+                ),
+                child: GestureDetector(
+                  onTap: () => context.push(AppRoute.paywall),
+                  child: Container(
+                    height: AppMetrics.profileProBannerHeight,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppMetrics.radiusM),
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/ic_profile_mine.png'),
+                        fit: BoxFit.fill,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFF39C12).withValues(alpha: 0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/ic_profile_king.png',
+                          width: 34,
+                          height: 34,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'BabyGenie VIP',
+                                      style: TextStyle(
+                                        color: Color(0xFF5A3900),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Image(
+                                    image: AssetImage('assets/images/ic_profile_start.png'),
+                                    width: 12,
+                                    height: 12,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Unlock all features & HD export',
+                                style: TextStyle(
+                                  color: Color(0xFF7A5200),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF5A3900), Color(0xFF382300)],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'Get VIP',
+                            style: TextStyle(
+                              color: Color(0xFFFFE79A),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               // Filter chips
@@ -233,6 +350,39 @@ class _WorkItem extends StatelessWidget {
   final ProfileWork work;
   final VoidCallback onDelete;
 
+  void _confirmDelete(BuildContext context) {
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'Delete',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: const Text('Delete this work? It cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel', style: TextStyle(color: Color(0xFF888888))),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                onDelete();
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -253,7 +403,7 @@ class _WorkItem extends StatelessWidget {
           ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Left cover 92×122
             ClipRRect(
@@ -267,39 +417,42 @@ class _WorkItem extends StatelessWidget {
                 child: _CoverImage(work: work),
               ),
             ),
-            // Right info
+            // Middle info
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       work.name,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: Color(0xFF181818),
                       ),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       _statusMessage(work, context.l10n),
                       style: TextStyle(
                         fontSize: 12,
                         color: work.isFailed
                             ? AppColors.error
-                            : const Color(0xFFE8A12B),
+                            : work.isProcessing
+                                ? const Color(0xFF888888)
+                                : const Color(0xFFE8A12B),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 10),
                     Text(
                       _formatTime(work.createdAt),
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: Color(0xFF888888),
                       ),
                     ),
                   ],
@@ -308,11 +461,17 @@ class _WorkItem extends StatelessWidget {
             ),
             // Delete icon
             IconButton(
-              onPressed: onDelete,
-              icon: const Icon(
-                Icons.delete_outline,
-                size: 20,
-                color: AppColors.textSecondary,
+              onPressed: () => _confirmDelete(context),
+              icon: Image.asset(
+                'assets/images/ic_profile_delete.png',
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
           ],
@@ -324,7 +483,7 @@ class _WorkItem extends StatelessWidget {
   String _statusMessage(ProfileWork w, AppL10n l10n) {
     if (w.isCompleted) return l10n.workFilesAvailable;
     if (w.isFailed) return l10n.workGenerationFailed;
-    return l10n.workWaiting;
+    return 'Expected to wait for 30 minutes, please be patient';
   }
 
   String _formatTime(String iso) {
@@ -351,16 +510,16 @@ class _CoverImage extends StatelessWidget {
       return Stack(
         fit: StackFit.expand,
         children: [
-          if (url.isNotEmpty)
-            Image.network(url, fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _placeholder())
-          else
-            _placeholder(),
-          Container(color: Colors.black54),
+          _renderImage(url),
+          Container(color: Colors.black45),
           const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-              strokeWidth: 2,
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 2.5,
+              ),
             ),
           ),
         ],
@@ -372,27 +531,73 @@ class _CoverImage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           _placeholder(),
-          const Center(
-            child: Icon(Icons.error_outline, color: AppColors.error, size: 32),
+          Center(
+            child: Image.asset(
+              'assets/images/ic_profile_fail.png',
+              width: 34,
+              height: 34,
+              errorBuilder: (_, _, _) => const Icon(
+                Icons.error_outline,
+                color: AppColors.error,
+                size: 32,
+              ),
+            ),
           ),
         ],
       );
     }
 
     // completed
-    if (url.isNotEmpty) {
-      return Image.network(
-        url,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _renderImage(url),
+        if (work.isVideo)
+          Center(
+            child: Image.asset(
+              'assets/images/icon_showvideo_play.png',
+              width: 28,
+              height: 28,
+              errorBuilder: (_, _, _) => const Icon(
+                Icons.play_circle_fill,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _renderImage(String path) {
+    if (path.isEmpty) return _placeholder();
+    if (path.startsWith('assets/')) {
+      return Image.asset(
+        path,
         fit: BoxFit.cover,
         errorBuilder: (_, _, _) => _placeholder(),
       );
     }
-    return _placeholder();
+    if (path.startsWith('http')) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _placeholder(),
+      );
+    }
+    return Image.asset(
+      path,
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => _placeholder(),
+    );
   }
 
   Widget _placeholder() => Container(
         color: AppColors.surfaceVariant,
-        child: const Icon(Icons.image_outlined,
-            size: 32, color: AppColors.textHint),
+        child: const Icon(
+          Icons.image_outlined,
+          size: 32,
+          color: AppColors.textHint,
+        ),
       );
 }

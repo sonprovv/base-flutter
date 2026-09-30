@@ -19,6 +19,14 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late int _currentIndex = widget.initialTab;
 
+  @override
+  void didUpdateWidget(MainScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab) {
+      setState(() => _currentIndex = widget.initialTab);
+    }
+  }
+
   static const _tabs = [
     HomeScreen(),
     VideoScreen(),

@@ -38,7 +38,7 @@ class HomeScreen extends ConsumerWidget {
                     'assets/images/ic_baby_genie_title.png',
                     height: 28,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Text(
+                    errorBuilder: (_, _, _) => Text(
                       context.l10n.appName,
                       style: const TextStyle(
                         fontSize: 22,

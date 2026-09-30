@@ -1,10 +1,10 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
-import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 /// Purple ✦ 0 badge — matches the one in detail screens.
@@ -43,22 +43,40 @@ class GenPointsBadge extends StatelessWidget {
 
 /// Standard header row: back arrow left, badge right.
 class GenHeader extends StatelessWidget {
-  const GenHeader({super.key});
+  const GenHeader({super.key, this.title});
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: AppColors.onBackground,
-              size: 26,
+            icon: Image.asset(
+              'assets/images/icon_arrow_left_black.png',
+              width: 24,
+              height: 24,
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => const Icon(
+                Icons.arrow_back,
+                color: AppColors.onBackground,
+                size: 24,
+              ),
             ),
             onPressed: () => context.pop(),
           ),
+          if (title != null) ...[
+            const SizedBox(width: 8),
+            Text(
+              title!,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
           const Spacer(),
           const GenPointsBadge(),
         ],
@@ -67,7 +85,7 @@ class GenHeader extends StatelessWidget {
   }
 }
 
-/// Bold label above + photo picker box below.
+/// Bold label above + photo picker box below (150dp height, rounded 12dp).
 /// When [pickedPath] is non-null, shows the picked image with a delete button.
 class LabeledPicker extends StatelessWidget {
   const LabeledPicker({
@@ -76,63 +94,81 @@ class LabeledPicker extends StatelessWidget {
     required this.onTap,
     this.pickedPath,
     this.onDelete,
+    this.height = 150.0,
   });
   final String label;
   final VoidCallback onTap;
   final String? pickedPath;
   final VoidCallback? onDelete;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           label,
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.onBackground,
+            color: Color(0xFF1F1F1F),
           ),
         ),
-        const SizedBox(height: AppMetrics.spaceXs),
+        const SizedBox(height: 8),
         pickedPath != null
             ? _PickedPhoto(
                 path: pickedPath!,
-                height: AppMetrics.generatePickerHeight,
+                height: height,
                 onDelete: onDelete,
               )
             : GestureDetector(
                 onTap: onTap,
                 child: Container(
                   width: double.infinity,
-                  height: AppMetrics.generatePickerHeight,
+                  height: height,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(AppMetrics.radiusL),
+                    color: const Color(0xFFF6F5FA),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        width: AppMetrics.generatePickerAddCircle,
-                        height: AppMetrics.generatePickerAddCircle,
+                        width: 64,
+                        height: 64,
                         decoration: BoxDecoration(
                           color: AppColors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withAlpha(20),
-                              blurRadius: 8,
+                              color: Colors.black.withAlpha(12),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.add, color: AppColors.primary),
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/ic_pic_add.png',
+                            width: 32,
+                            height: 32,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.add,
+                              color: AppColors.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: AppMetrics.spaceXs),
+                      const SizedBox(height: 10),
                       Text(
                         context.l10n.uploadPhoto,
-                        style: const TextStyle(fontSize: 13, color: AppColors.textHint),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFAAAAAA),
+                        ),
                       ),
                     ],
                   ),
@@ -217,19 +253,38 @@ class _PickedPhoto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget imageWidget;
+    if (path.startsWith('assets/')) {
+      imageWidget = Image.asset(
+        path,
+        width: double.infinity,
+        height: height,
+        fit: BoxFit.cover,
+      );
+    } else if (path.startsWith('http') || path.startsWith('blob:') || kIsWeb) {
+      imageWidget = Image.network(
+        path,
+        width: double.infinity,
+        height: height,
+        fit: BoxFit.cover,
+      );
+    } else {
+      imageWidget = Image.file(
+        File(path),
+        width: double.infinity,
+        height: height,
+        fit: BoxFit.cover,
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       height: height,
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(AppMetrics.radiusL),
-            child: Image.file(
-              File(path),
-              width: double.infinity,
-              height: height,
-              fit: BoxFit.cover,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox.expand(child: imageWidget),
           ),
           if (onDelete != null)
             Positioned(
@@ -257,10 +312,10 @@ class CurveArrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppMetrics.spaceS),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Image.asset(
         'assets/images/ic_pic_arrow_down.png',
-        height: 56,
+        height: 48,
         fit: BoxFit.contain,
       ),
     );

@@ -62,7 +62,7 @@ class SettingsScreen extends StatelessWidget {
                   leadingIcon: Image.asset(
                     'assets/images/icon_me_privacy.png',
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.privacy_tip_outlined, color: AppColors.onBackground, size: 20),
+                    errorBuilder: (_, _, _) => const Icon(Icons.privacy_tip_outlined, color: AppColors.onBackground, size: 20),
                   ),
                   label: context.l10n.settingsPrivacyPolicy,
                   onTap: () => _openUrl(_privacyPolicyUrl),
@@ -72,7 +72,7 @@ class SettingsScreen extends StatelessWidget {
                   leadingIcon: Image.asset(
                     'assets/images/ic_start_mid.png',
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.star_rate_outlined, color: AppColors.onBackground, size: 20),
+                    errorBuilder: (_, _, _) => const Icon(Icons.star_rate_outlined, color: AppColors.onBackground, size: 20),
                   ),
                   label: context.l10n.settingsRateApp,
                   onTap: () => RateAppDialog.show(context, playStoreUrl: _playStoreUrl),
@@ -141,7 +141,7 @@ class _SettingsItem extends StatelessWidget {
               width: 14,
               height: 14,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(
+              errorBuilder: (_, _, _) => const Icon(
                 Icons.arrow_forward_ios,
                 size: 14,
                 color: AppColors.onSurfaceVariant,

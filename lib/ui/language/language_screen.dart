@@ -77,11 +77,12 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
                   if (!widget.fromSplash)
                     IconButton(
                       icon: Image.asset(
-                        'assets/images/icon_back.png',
+                        'assets/images/icon_arrow_left_black.png',
                         width: 24,
                         height: 24,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.arrow_back),
+                        color: AppColors.onBackground,
+                        errorBuilder: (_, _, _) => const Icon(Icons.arrow_back, color: AppColors.onBackground),
                       ),
                       onPressed: () => context.pop(),
                     ),
@@ -111,20 +112,26 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppMetrics.screenPaddingHorizontal,
-                ),
-                itemCount: _languages.length,
-                itemBuilder: (context, index) {
-                  final lang = _languages[index];
-                  final isSelected = _selected == lang.code;
-                  return _LangItem(
-                    lang: lang,
-                    isSelected: isSelected,
-                    onTap: () => _onSelect(lang.code),
-                  );
+              child: RadioGroup<String>(
+                groupValue: _selected,
+                onChanged: (val) {
+                  if (val != null) _onSelect(val);
                 },
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppMetrics.screenPaddingHorizontal,
+                  ),
+                  itemCount: _languages.length,
+                  itemBuilder: (context, index) {
+                    final lang = _languages[index];
+                    final isSelected = _selected == lang.code;
+                    return _LangItem(
+                      lang: lang,
+                      isSelected: isSelected,
+                      onTap: () => _onSelect(lang.code),
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -180,8 +187,6 @@ class _LangItem extends StatelessWidget {
             ),
             Radio<String>(
               value: lang.code,
-              groupValue: isSelected ? lang.code : null,
-              onChanged: (_) => onTap(),
               activeColor: AppColors.primary,
             ),
           ],

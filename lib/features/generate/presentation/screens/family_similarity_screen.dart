@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_result_dialog.dart';
 import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_shared.dart';
 import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
@@ -20,12 +22,14 @@ class _FamilySimilarityScreenState extends State<FamilySimilarityScreen> {
   String? _babyPath;
 
   void _generate() {
-    context.push(AppRoute.generating, extra: {
-      'featureTitle': 'family similarity',
-      'momPath': _motherPath!,
-      'dadPath': _fatherPath!,
-      'prompt': 'family similarity analysis with baby photo',
-    });
+    final resultAsset = _babyPath ?? 'assets/images/img_gender_baby_girl.png';
+    unawaited(
+      GenerateResultDialog.show(
+        context,
+        featureTitle: 'Family Similarity',
+        resultAsset: resultAsset,
+      ),
+    );
   }
 
   @override

@@ -134,6 +134,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             momPath: extra['momPath'] as String,
             dadPath: extra['dadPath'] as String,
             prompt: extra['prompt'] as String,
+            resultAsset: extra['resultAsset'] as String?,
           );
         },
       ),

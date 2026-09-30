@@ -1,9 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_result_dialog.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_shared.dart';
 import 'package:flutter_app_factory_base/l10n/l10n.dart';
+import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
 import 'package:go_router/go_router.dart';
 
 class TemplateGenerateScreen extends StatefulWidget {
@@ -21,11 +25,72 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
   String? _motherPhoto;
   String? _fatherPhoto;
 
+  String get _composition =>
+      widget.template?.composition.trim().toLowerCase() ?? 'baby_only';
+
+  @override
+  void initState() {
+    super.initState();
+    if (_composition.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        final photoPath =
+            await context.push<String?>(AppRoute.photoUploadReminder);
+        if (photoPath != null && mounted) {
+          final t = widget.template;
+          final resultAsset = (t != null && t.displayMediaUrl.isNotEmpty)
+              ? t.displayMediaUrl
+              : photoPath;
+          await GenerateResultDialog.show(
+            context,
+            featureTitle:
+                (t != null && t.name.isNotEmpty) ? t.name : 'AI Baby Template',
+            resultAsset: resultAsset,
+          );
+        }
+        if (mounted) {
+          context.pop();
+        }
+      });
+    }
+  }
+
   bool get _canGenerate {
-    if (_isBornMode) {
+    if (_composition.isEmpty) {
       return _babyPhoto != null;
+    }
+    if (_isBornMode) {
+      switch (_composition) {
+        case 'baby_family':
+          return _motherPhoto != null &&
+              _fatherPhoto != null &&
+              _babyPhoto != null;
+        case 'baby_with_mom':
+          return _motherPhoto != null && _babyPhoto != null;
+        case 'baby_with_dad':
+          return _fatherPhoto != null && _babyPhoto != null;
+        case 'baby_only':
+        default:
+          return _babyPhoto != null;
+      }
     } else {
-      return _motherPhoto != null && _fatherPhoto != null;
+      switch (_composition) {
+        case 'baby_with_mom':
+          return _motherPhoto != null;
+        case 'baby_with_dad':
+          return _fatherPhoto != null;
+        case 'baby_family':
+        case 'baby_only':
+        default:
+          return _motherPhoto != null && _fatherPhoto != null;
+      }
+    }
+  }
+
+  Future<void> _pickPhoto(void Function(String path) onPicked) async {
+    final path = await context.push<String?>(AppRoute.photoUploadReminder);
+    if (path != null && mounted) {
+      setState(() => onPicked(path));
     }
   }
 
@@ -141,7 +206,7 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
             // Scrollable Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _isBornMode
                     ? _buildBornContent()
                     : _buildUnbornContent(),
@@ -149,72 +214,25 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
             ),
 
             // Bottom CTA Button: "Create Now" + Sparkle + points
-            Container(
-              margin: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-              width: double.infinity,
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: _canGenerate
-                    ? const LinearGradient(
-                        colors: [Color(0xFF6C5CE7), Color(0xFF5A48E0)],
-                      )
-                    : null,
-                color: _canGenerate ? null : const Color(0xFFD6D6DE),
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: _canGenerate
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFF6C5CE7).withValues(alpha: 0.35),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(28),
-                  onTap: _canGenerate ? _onGeneratePressed : null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Text(
-                        context.l10n.createNow,
-                        style: TextStyle(
-                          color: _canGenerate ? Colors.white : Colors.white.withValues(alpha: 0.8),
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.auto_awesome,
-                                color: _canGenerate ? Colors.white : Colors.white.withValues(alpha: 0.8),
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '$points',
-                                style: TextStyle(
-                                  color: _canGenerate ? Colors.white : Colors.white.withValues(alpha: 0.8),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              child: GradientCtaButton(
+                height: 56,
+                enabled: _canGenerate,
+                disabledColor: const Color(0xFFD6D6DE),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6C5CE7), Color(0xFF5A48E0)],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.35),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+                label: context.l10n.createNow,
+                points: points,
+                onTap: _onGeneratePressed,
               ),
             ),
           ],
@@ -224,27 +242,120 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
   }
 
   Widget _buildBornContent() {
+    switch (_composition) {
+      case 'baby_family':
+        return _buildBornBabyFamily();
+      case 'baby_with_mom':
+        return _buildBornBabyWithMom();
+      case 'baby_with_dad':
+        return _buildBornBabyWithDad();
+      case 'baby_only':
+      default:
+        return _buildBornBabyOnly();
+    }
+  }
+
+  Widget _buildBornBabyOnly() {
     return Column(
       children: [
-        const SizedBox(height: 16),
-        Text(
-          context.l10n.babysPhoto,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
-            color: AppColors.onBackground,
-          ),
+        const SizedBox(height: 12),
+        LabeledPicker(
+          label: context.l10n.babysPhoto,
+          pickedPath: _babyPhoto,
+          height: 320,
+          onDelete: () => setState(() => _babyPhoto = null),
+          onTap: () => _pickPhoto((path) => _babyPhoto = path),
         ),
         const SizedBox(height: 16),
-        _buildUploadCard(
-          height: 320,
-          photoPath: _babyPhoto,
-          onTap: () {
-            // Pick or toggle demo sample photo
-            setState(() {
-              _babyPhoto = _babyPhoto == null ? 'assets/images/ic_main_future_baby.png' : null;
-            });
-          },
+      ],
+    );
+  }
+
+  /// Exact UI style of Future Family:
+  /// Row of Mom's photo + Dad's photo (LabeledPicker) -> CurveArrow() -> Baby's photo (LabeledPicker)
+  Widget _buildBornBabyFamily() {
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: LabeledPicker(
+                label: context.l10n.momsPhoto,
+                pickedPath: _motherPhoto,
+                height: 150,
+                onDelete: () => setState(() => _motherPhoto = null),
+                onTap: () => _pickPhoto((path) => _motherPhoto = path),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: LabeledPicker(
+                label: context.l10n.dadsPhoto,
+                pickedPath: _fatherPhoto,
+                height: 150,
+                onDelete: () => setState(() => _fatherPhoto = null),
+                onTap: () => _pickPhoto((path) => _fatherPhoto = path),
+              ),
+            ),
+          ],
+        ),
+        const CurveArrow(),
+        LabeledPicker(
+          label: context.l10n.babysPhoto,
+          pickedPath: _babyPhoto,
+          height: 180,
+          onDelete: () => setState(() => _babyPhoto = null),
+          onTap: () => _pickPhoto((path) => _babyPhoto = path),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildBornBabyWithMom() {
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        LabeledPicker(
+          label: context.l10n.momsPhoto,
+          pickedPath: _motherPhoto,
+          height: 170,
+          onDelete: () => setState(() => _motherPhoto = null),
+          onTap: () => _pickPhoto((path) => _motherPhoto = path),
+        ),
+        const SizedBox(height: 16),
+        LabeledPicker(
+          label: context.l10n.babysPhoto,
+          pickedPath: _babyPhoto,
+          height: 170,
+          onDelete: () => setState(() => _babyPhoto = null),
+          onTap: () => _pickPhoto((path) => _babyPhoto = path),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildBornBabyWithDad() {
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        LabeledPicker(
+          label: context.l10n.dadsPhoto,
+          pickedPath: _fatherPhoto,
+          height: 170,
+          onDelete: () => setState(() => _fatherPhoto = null),
+          onTap: () => _pickPhoto((path) => _fatherPhoto = path),
+        ),
+        const SizedBox(height: 16),
+        LabeledPicker(
+          label: context.l10n.babysPhoto,
+          pickedPath: _babyPhoto,
+          height: 170,
+          onDelete: () => setState(() => _babyPhoto = null),
+          onTap: () => _pickPhoto((path) => _babyPhoto = path),
         ),
         const SizedBox(height: 16),
       ],
@@ -252,177 +363,77 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
   }
 
   Widget _buildUnbornContent() {
-    return Column(
-      children: [
-        const SizedBox(height: 16),
-        Text(
-          context.l10n.mothersPhoto,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
-            color: AppColors.onBackground,
+    if (_composition == 'baby_with_mom') {
+      return Column(
+        children: [
+          const SizedBox(height: 12),
+          LabeledPicker(
+            label: context.l10n.momsPhoto,
+            pickedPath: _motherPhoto,
+            height: 280,
+            onDelete: () => setState(() => _motherPhoto = null),
+            onTap: () => _pickPhoto((path) => _motherPhoto = path),
           ),
-        ),
-        const SizedBox(height: 12),
-        _buildUploadCard(
-          height: 180,
-          photoPath: _motherPhoto,
-          onTap: () {
-            setState(() {
-              _motherPhoto = _motherPhoto == null ? 'assets/images/gender_baby_girl.png' : null;
-            });
-          },
-        ),
-        const SizedBox(height: 20),
-        Text(
-          context.l10n.fathersPhoto,
-          style: const TextStyle(
-            fontSize: 19,
-            fontWeight: FontWeight.bold,
-            color: AppColors.onBackground,
+          const SizedBox(height: 16),
+        ],
+      );
+    } else if (_composition == 'baby_with_dad') {
+      return Column(
+        children: [
+          const SizedBox(height: 12),
+          LabeledPicker(
+            label: context.l10n.dadsPhoto,
+            pickedPath: _fatherPhoto,
+            height: 280,
+            onDelete: () => setState(() => _fatherPhoto = null),
+            onTap: () => _pickPhoto((path) => _fatherPhoto = path),
           ),
-        ),
-        const SizedBox(height: 12),
-        _buildUploadCard(
-          height: 180,
-          photoPath: _fatherPhoto,
-          onTap: () {
-            setState(() {
-              _fatherPhoto = _fatherPhoto == null ? 'assets/images/gender_baby_boy.png' : null;
-            });
-          },
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildUploadCard({
-    required double height,
-    required String? photoPath,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: height,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF7F7FA),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFEEEEF3), width: 1.5),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: photoPath != null
-              ? Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      photoPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => const Center(
-                        child: Icon(Icons.check_circle, color: Color(0xFF6C5CE7), size: 48),
-                      ),
-                    ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.close, color: Colors.white, size: 16),
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 58,
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        size: 32,
-                        color: Color(0xFF9E9EB0),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      context.l10n.uploadPhoto,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF9E9EB0),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
-    );
+          const SizedBox(height: 16),
+        ],
+      );
+    } else {
+      // baby_family, baby_only, or default
+      return Column(
+        children: [
+          const SizedBox(height: 12),
+          LabeledPicker(
+            label: context.l10n.momsPhoto,
+            pickedPath: _motherPhoto,
+            height: 180,
+            onDelete: () => setState(() => _motherPhoto = null),
+            onTap: () => _pickPhoto((path) => _motherPhoto = path),
+          ),
+          const SizedBox(height: 16),
+          LabeledPicker(
+            label: context.l10n.dadsPhoto,
+            pickedPath: _fatherPhoto,
+            height: 180,
+            onDelete: () => setState(() => _fatherPhoto = null),
+            onTap: () => _pickPhoto((path) => _fatherPhoto = path),
+          ),
+          const SizedBox(height: 24),
+        ],
+      );
+    }
   }
 
   void _onGeneratePressed() {
-    unawaited(
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  ctx.l10n.generatingAiBaby,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  ctx.l10n.analyzingFacialFeatures,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    final t = widget.template;
+    final resultAsset = (t != null && t.displayMediaUrl.isNotEmpty)
+        ? t.displayMediaUrl
+        : (_isBornMode
+            ? (_babyPhoto ?? 'assets/images/img_gender_baby_girl.png')
+            : (_motherPhoto ?? _fatherPhoto ?? 'assets/images/img_gender_baby_girl.png'));
+    final featureTitle = (t != null && t.name.isNotEmpty)
+        ? t.name
+        : 'AI Baby Template';
 
     unawaited(
-      Future<void>.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(context.l10n.generationComplete),
-              backgroundColor: const Color(0xFF6C5CE7),
-            ),
-          );
-        }
-      }),
+      GenerateResultDialog.show(
+        context,
+        featureTitle: featureTitle,
+        resultAsset: resultAsset,
+      ),
     );
   }
 }

@@ -4,7 +4,9 @@ import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/data/repositories/baby_data_repository.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_result_dialog.dart';
 import 'package:flutter_app_factory_base/l10n/l10n.dart';
+import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/template_detail_preview_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -124,11 +126,12 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
                 children: [
                   IconButton(
                     icon: Image.asset(
-                      'assets/images/icon_back.png',
+                      'assets/images/icon_arrow_left_black.png',
                       width: 26,
                       height: 26,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.arrow_back, color: AppColors.onBackground, size: 26),
+                      color: AppColors.onBackground,
+                      errorBuilder: (_, _, _) => const Icon(Icons.arrow_back, color: AppColors.onBackground, size: 26),
                     ),
                     onPressed: () => context.pop(),
                   ),
@@ -205,15 +208,13 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
             ),
 
             // Bottom CTA Button
-            Container(
-              margin: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-              width: double.infinity,
-              height: 56,
-              decoration: BoxDecoration(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: GradientCtaButton(
+                height: 56,
                 gradient: const LinearGradient(
                   colors: [Color(0xFF6C5CE7), Color(0xFF5A48E0)],
                 ),
-                borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF6C5CE7).withValues(alpha: 0.35),
@@ -221,49 +222,30 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
                     offset: const Offset(0, 6),
                   ),
                 ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(28),
-                  onTap: () {
-                    unawaited(context.push(AppRoute.templateGenerate, extra: currentItem));
-                  },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Text(
-                        context.l10n.generateBabyPhoto,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${currentItem.points > 0 ? currentItem.points : 30}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                label: context.l10n.generateBabyPhoto,
+                points: currentItem.points > 0 ? currentItem.points : 30,
+                onTap: () async {
+                  if (currentItem.composition.isEmpty) {
+                    final photoPath =
+                        await context.push<String?>(AppRoute.photoUploadReminder);
+                    if (photoPath != null && context.mounted) {
+                      final resultAsset = currentItem.displayMediaUrl.isNotEmpty
+                          ? currentItem.displayMediaUrl
+                          : photoPath;
+                      await GenerateResultDialog.show(
+                        context,
+                        featureTitle: currentItem.name.isNotEmpty
+                            ? currentItem.name
+                            : 'AI Baby Dance',
+                        resultAsset: resultAsset,
+                      );
+                    }
+                  } else {
+                    unawaited(
+                      context.push(AppRoute.templateGenerate, extra: currentItem),
+                    );
+                  }
+                },
               ),
             ),
           ],
