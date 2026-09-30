@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/features/photo/presentation/screens/photo_upload_reminder_screen.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _wrap(Widget child) => MaterialApp(home: child);
+Widget _wrap(Widget child) => MaterialApp(
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      home: child,
+    );
 
 void main() {
   group('PhotoUploadReminderScreen', () {

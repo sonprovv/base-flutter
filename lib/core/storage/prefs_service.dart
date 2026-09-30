@@ -16,6 +16,7 @@ class PrefsService {
   bool get isCompletedOnboarding => _prefs.getBool(_keyCompletedOnboarding) ?? false;
   set isCompletedOnboarding(bool v) => _prefs.setBool(_keyCompletedOnboarding, v);
 
+  bool get isFirstOpenApp => openCount <= 1 || !isCompletedOnboarding;
   bool get isSecondOpen => openCount == 2;
 
   String get selectedLanguage => _prefs.getString(_keySelectedLanguage) ?? 'en';

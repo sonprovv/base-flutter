@@ -54,7 +54,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoute.language,
-        builder: (context, state) => const LanguageScreen(),
+        builder: (context, state) {
+          final extra = state.extra;
+          bool? isFirstOpen;
+          if (extra is bool) {
+            isFirstOpen = extra;
+          } else if (extra is Map<String, dynamic>) {
+            isFirstOpen = extra['isFirstOpenApp'] as bool? ?? extra['fromSplash'] as bool?;
+          }
+          return LanguageScreen(isFirstOpenApp: isFirstOpen);
+        },
       ),
       GoRoute(
         path: AppRoute.onboarding,

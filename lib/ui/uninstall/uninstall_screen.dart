@@ -10,17 +10,15 @@ class UninstallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, _) => context.go(AppRoute.main),
+      child: Scaffold(
         backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: const BackButton(color: AppColors.onBackground),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppMetrics.screenPaddingHorizontal),
-          child: Column(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppMetrics.screenPaddingHorizontal),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: AppMetrics.spaceL),
@@ -86,6 +84,7 @@ class UninstallScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppMetrics.spaceM),
             ],
+            ),
           ),
         ),
       ),

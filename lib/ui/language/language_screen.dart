@@ -31,9 +31,14 @@ const _languages = [
 ];
 
 class LanguageScreen extends ConsumerStatefulWidget {
+  const LanguageScreen({
+    super.key,
+    this.fromSplash = false,
+    this.isFirstOpenApp,
+  });
 
-  const LanguageScreen({super.key, this.fromSplash = false});
   final bool fromSplash;
+  final bool? isFirstOpenApp;
 
   @override
   ConsumerState<LanguageScreen> createState() => _LanguageScreenState();
@@ -41,6 +46,17 @@ class LanguageScreen extends ConsumerStatefulWidget {
 
 class _LanguageScreenState extends ConsumerState<LanguageScreen> {
   String? _selected;
+
+  bool get _isFirstOpenApp {
+    if (widget.isFirstOpenApp != null) {
+      return widget.isFirstOpenApp!;
+    }
+    if (widget.fromSplash) {
+      return true;
+    }
+    final prefs = ref.read(prefsServiceProvider);
+    return prefs.isFirstOpenApp;
+  }
 
   void _onSelect(String code) {
     setState(() => _selected = code);
@@ -61,31 +77,34 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
   Widget build(BuildContext context) {
     final prefs = ref.read(prefsServiceProvider);
     _selected ??= prefs.selectedLanguage;
+    final showBackButton = !_isFirstOpenApp;
 
-    return Scaffold(
-      backgroundColor: AppColors.primaryContainer,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppMetrics.screenPaddingHorizontal,
-                vertical: AppMetrics.spaceM,
-              ),
-              child: Row(
-                children: [
-                  if (!widget.fromSplash)
-                    IconButton(
-                      icon: Image.asset(
-                        'assets/images/icon_arrow_left_black.png',
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.contain,
-                        color: AppColors.onBackground,
-                        errorBuilder: (_, _, _) => const Icon(Icons.arrow_back, color: AppColors.onBackground),
+    return PopScope(
+      canPop: !_isFirstOpenApp,
+      child: Scaffold(
+        backgroundColor: AppColors.primaryContainer,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppMetrics.screenPaddingHorizontal,
+                  vertical: AppMetrics.spaceM,
+                ),
+                child: Row(
+                  children: [
+                    if (showBackButton)
+                      IconButton(
+                        icon: Image.asset(
+                          'assets/images/icon_arrow_left_black.png',
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.contain,
+                          color: AppColors.onBackground,
+                          errorBuilder: (_, _, _) => const Icon(Icons.arrow_back, color: AppColors.onBackground),
+                        ),
+                        onPressed: () => Navigator.of(context).maybePop(),
                       ),
-                      onPressed: () => context.pop(),
-                    ),
                   Expanded(
                     child: Text(
                       context.l10n.chooseLanguage,
@@ -137,8 +156,9 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _LangItem extends StatelessWidget {

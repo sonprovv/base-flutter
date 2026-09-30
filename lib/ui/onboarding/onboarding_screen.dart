@@ -7,6 +7,7 @@ import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class _OnboardingPage {
   const _OnboardingPage({
@@ -72,6 +73,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (_) {
+      try {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      } catch (e) {
+        debugPrint('Failed to open url: $url: $e');
+      }
+    }
+  }
+
   void _finish() {
     ref.read(prefsServiceProvider).isCompletedOnboarding = true;
     context.go(AppRoute.main);
@@ -89,26 +109,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             itemCount: _pages.length,
             onPageChanged: (i) => setState(() => _currentPage = i),
             itemBuilder: (context, index) => _HeroPage(page: _pages[index]),
-          ),
-
-          Positioned(
-            top: MediaQuery.of(context).padding.top + AppMetrics.spaceS,
-            right: AppMetrics.screenPaddingHorizontal,
-            child: AnimatedOpacity(
-              opacity: _currentPage < _pages.length - 1 ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: TextButton(
-                onPressed: _currentPage < _pages.length - 1 ? _finish : null,
-                child: Text(
-                  context.l10n.skip,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
           ),
 
           Positioned(
@@ -176,10 +176,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     ),
                     const SizedBox(height: AppMetrics.spaceS),
 
-                    Text(
-                      context.l10n.termsAgreement,
-                      style: const TextStyle(fontSize: 11, color: Colors.white54),
-                      textAlign: TextAlign.center,
+                    GestureDetector(
+                      key: const ValueKey('btn_onboarding_terms_policy'),
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _openUrl('https://babygenie.app/privacy-policy'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        child: Text(
+                          context.l10n.termsAgreement,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white54,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white38,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ],
                 ),

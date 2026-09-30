@@ -69,8 +69,8 @@ class _ProfileContent extends ConsumerWidget {
                         padding: const EdgeInsets.all(4),
                         child: Image.asset(
                           'assets/images/ic_profile_setting.png',
-                          width: 24,
-                          height: 24,
+                          width: 28,
+                          height: 28,
                           fit: BoxFit.contain,
                           errorBuilder: (_, _, _) => const Icon(
                             Icons.settings_outlined,
@@ -135,111 +135,111 @@ class _ProfileContent extends ConsumerWidget {
                 ),
               ),
               // VIP Pro Banner
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppMetrics.screenPaddingHorizontal,
-                  AppMetrics.spaceXs,
-                  AppMetrics.screenPaddingHorizontal,
-                  AppMetrics.spaceS,
-                ),
-                child: GestureDetector(
-                  onTap: () => context.push(AppRoute.paywall),
-                  child: Container(
-                    height: AppMetrics.profileProBannerHeight,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppMetrics.radiusM),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/ic_profile_mine.png'),
-                        fit: BoxFit.fill,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFF39C12).withValues(alpha: 0.2),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/ic_profile_king.png',
-                          width: 34,
-                          height: 34,
-                          fit: BoxFit.contain,
-                        ),
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      'BabyGenie VIP',
-                                      style: TextStyle(
-                                        color: Color(0xFF5A3900),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4),
-                                  Image(
-                                    image: AssetImage('assets/images/ic_profile_start.png'),
-                                    width: 12,
-                                    height: 12,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Unlock all features & HD export',
-                                style: TextStyle(
-                                  color: Color(0xFF7A5200),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF5A3900), Color(0xFF382300)],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'Get VIP',
-                            style: TextStyle(
-                              color: Color(0xFFFFE79A),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(
+              //     AppMetrics.screenPaddingHorizontal,
+              //     AppMetrics.spaceXs,
+              //     AppMetrics.screenPaddingHorizontal,
+              //     AppMetrics.spaceS,
+              //   ),
+              //   child: GestureDetector(
+              //     onTap: () => context.push(AppRoute.paywall),
+              //     child: Container(
+              //       height: AppMetrics.profileProBannerHeight,
+              //       width: double.infinity,
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(AppMetrics.radiusM),
+              //         image: const DecorationImage(
+              //           image: AssetImage('assets/images/ic_profile_mine.png'),
+              //           fit: BoxFit.fill,
+              //         ),
+              //         boxShadow: [
+              //           BoxShadow(
+              //             color: const Color(0xFFF39C12).withValues(alpha: 0.2),
+              //             blurRadius: 10,
+              //             offset: const Offset(0, 3),
+              //           ),
+              //         ],
+              //       ),
+              //       padding: const EdgeInsets.symmetric(horizontal: 12),
+              //       child: Row(
+              //         children: [
+              //           Image.asset(
+              //             'assets/images/ic_profile_king.png',
+              //             width: 34,
+              //             height: 34,
+              //             fit: BoxFit.contain,
+              //           ),
+              //           const SizedBox(width: 8),
+              //           const Expanded(
+              //             child: Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               mainAxisAlignment: MainAxisAlignment.center,
+              //               mainAxisSize: MainAxisSize.min,
+              //               children: [
+              //                 Row(
+              //                   mainAxisSize: MainAxisSize.min,
+              //                   children: [
+              //                     Flexible(
+              //                       child: Text(
+              //                         'BabyGenie VIP',
+              //                         style: TextStyle(
+              //                           color: Color(0xFF5A3900),
+              //                           fontWeight: FontWeight.bold,
+              //                           fontSize: 14,
+              //                         ),
+              //                         maxLines: 1,
+              //                         overflow: TextOverflow.ellipsis,
+              //                       ),
+              //                     ),
+              //                     SizedBox(width: 4),
+              //                     Image(
+              //                       image: AssetImage('assets/images/ic_profile_start.png'),
+              //                       width: 12,
+              //                       height: 12,
+              //                     ),
+              //                   ],
+              //                 ),
+              //                 SizedBox(height: 2),
+              //                 Text(
+              //                   'Unlock all features & HD export',
+              //                   style: TextStyle(
+              //                     color: Color(0xFF7A5200),
+              //                     fontSize: 11,
+              //                     fontWeight: FontWeight.w500,
+              //                   ),
+              //                   maxLines: 1,
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           const SizedBox(width: 8),
+              //           Container(
+              //             padding: const EdgeInsets.symmetric(
+              //               horizontal: 12,
+              //               vertical: 6,
+              //             ),
+              //             decoration: BoxDecoration(
+              //               gradient: const LinearGradient(
+              //                 colors: [Color(0xFF5A3900), Color(0xFF382300)],
+              //               ),
+              //               borderRadius: BorderRadius.circular(20),
+              //             ),
+              //             child: const Text(
+              //               'Get VIP',
+              //               style: TextStyle(
+              //                 color: Color(0xFFFFE79A),
+              //                 fontWeight: FontWeight.bold,
+              //                 fontSize: 12,
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
               // Filter chips
               Padding(
                 padding: const EdgeInsets.symmetric(

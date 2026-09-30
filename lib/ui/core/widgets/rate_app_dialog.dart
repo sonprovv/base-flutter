@@ -56,8 +56,17 @@ class _RateAppDialogState extends State<RateAppDialog>
       }
     } else {
       final uri = Uri.parse(widget.playStoreUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      try {
+        final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!launched) {
+          await launchUrl(uri, mode: LaunchMode.platformDefault);
+        }
+      } catch (_) {
+        try {
+          await launchUrl(uri, mode: LaunchMode.platformDefault);
+        } catch (e) {
+          debugPrint('Failed to open play store: $e');
+        }
       }
     }
   }

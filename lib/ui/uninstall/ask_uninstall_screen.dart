@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/core/services/shortcut_uninstall_service.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class AskUninstallScreen extends StatefulWidget {
+class AskUninstallScreen extends ConsumerStatefulWidget {
   const AskUninstallScreen({super.key});
 
   @override
-  State<AskUninstallScreen> createState() => _AskUninstallScreenState();
+  ConsumerState<AskUninstallScreen> createState() => _AskUninstallScreenState();
 }
 
-class _AskUninstallScreenState extends State<AskUninstallScreen> {
+class _AskUninstallScreenState extends ConsumerState<AskUninstallScreen> {
   int _selectedReason = 0;
 
   static const _reasons = [
@@ -31,7 +33,7 @@ class _AskUninstallScreenState extends State<AskUninstallScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const BackButton(color: AppColors.onBackground),
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: Padding(
@@ -132,6 +134,7 @@ class _AskUninstallScreenState extends State<AskUninstallScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
+              unawaited(ref.read(shortcutUninstallServiceProvider).openAppSettings());
               context.go(AppRoute.main);
             },
             child: const Text('Confirm', style: TextStyle(color: Colors.red)),

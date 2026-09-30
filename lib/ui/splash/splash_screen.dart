@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/core/services/shortcut_uninstall_service.dart';
 import 'package:flutter_app_factory_base/core/storage/prefs_service.dart';
 import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,12 +26,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _navigate() async {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
+
+    final shortcutService = ref.read(shortcutUninstallServiceProvider);
+    final shortcutRoute = await shortcutService.getInitialRoute();
+    if (!mounted) return;
+    if (shortcutRoute == AppRoute.uninstall) {
+      context.go(AppRoute.uninstall);
+      return;
+    }
+    unawaited(shortcutService.createUninstallShortcut());
+
     final prefs = ref.read(prefsServiceProvider);
     prefs.openCount = prefs.openCount + 1;
     if (prefs.isCompletedOnboarding && !prefs.isSecondOpen) {
       context.go(AppRoute.main);
     } else {
-      context.go(AppRoute.language);
+      context.go(AppRoute.language, extra: {'isFirstOpenApp': prefs.isFirstOpenApp});
     }
   }
 
