@@ -28,7 +28,7 @@ class GradientCtaButton extends StatelessWidget {
                   colors: [AppColors.gradientStart, AppColors.gradientEnd],
                 )
               : null,
-          color: enabled ? null : AppColors.outline,
+          color: enabled ? null : const Color(0xFFBDBDBD),
           borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
         ),
         child: Stack(

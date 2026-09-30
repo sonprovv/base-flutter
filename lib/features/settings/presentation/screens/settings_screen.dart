@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
+import 'package:flutter_app_factory_base/ui/core/widgets/rate_app_dialog.dart';
+import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  static const _privacyPolicyUrl = 'https://babygenie.app/privacy-policy';
+  static const _playStoreUrl =
+      'https://play.google.com/store/apps/details?id=com.babygenie.app';
+  static const _shareText = 'Check out BabyGenie – the best baby photo generator app!\nhttps://play.google.com/store/apps/details?id=com.babygenie.app';
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +31,9 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: const BackButton(color: AppColors.onBackground),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          context.l10n.settingsTitle,
+          style: const TextStyle(
             color: AppColors.onBackground,
             fontWeight: FontWeight.bold,
           ),
@@ -23,66 +41,55 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          _SettingsSection(
-            title: 'General',
-            items: [
-              _SettingsItem(
-                icon: Icons.language,
-                label: 'Language',
-                onTap: () => _showComingSoon(context),
-              ),
-              _SettingsItem(
-                icon: Icons.notifications_outlined,
-                label: 'Notifications',
-                onTap: () => _showComingSoon(context),
-              ),
-            ],
-          ),
-          _SettingsSection(
-            title: 'Account',
-            items: [
-              _SettingsItem(
-                icon: Icons.restore,
-                label: 'Restore Purchases',
-                onTap: () => _showComingSoon(context),
-              ),
-              _SettingsItem(
-                icon: Icons.star_outline,
-                label: 'Upgrade to PRO',
-                onTap: () => _showComingSoon(context),
-                trailingColor: AppColors.primary,
-              ),
-            ],
-          ),
-          _SettingsSection(
-            title: 'About',
-            items: [
-              _SettingsItem(
-                icon: Icons.privacy_tip_outlined,
-                label: 'Privacy Policy',
-                onTap: () => _showComingSoon(context),
-              ),
-              _SettingsItem(
-                icon: Icons.description_outlined,
-                label: 'Terms of Service',
-                onTap: () => _showComingSoon(context),
-              ),
-              _SettingsItem(
-                icon: Icons.mail_outline,
-                label: 'Contact Us',
-                onTap: () => _showComingSoon(context),
-              ),
-              _SettingsItem(
-                icon: Icons.star_rate_outlined,
-                label: 'Rate App',
-                onTap: () => _showComingSoon(context),
-              ),
-            ],
+          const SizedBox(height: AppMetrics.spaceS),
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: AppMetrics.screenPaddingHorizontal,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(AppMetrics.radiusM),
+            ),
+            child: Column(
+              children: [
+                _SettingsItem(
+                  leadingIcon: const Icon(Icons.language, color: AppColors.onBackground, size: 20),
+                  label: context.l10n.settingsLanguage,
+                  onTap: () => context.push(AppRoute.language),
+                ),
+                const Divider(height: 1, indent: 52, color: AppColors.outline),
+                _SettingsItem(
+                  leadingIcon: Image.asset(
+                    'assets/images/icon_me_privacy.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.privacy_tip_outlined, color: AppColors.onBackground, size: 20),
+                  ),
+                  label: context.l10n.settingsPrivacyPolicy,
+                  onTap: () => _openUrl(_privacyPolicyUrl),
+                ),
+                const Divider(height: 1, indent: 52, color: AppColors.outline),
+                _SettingsItem(
+                  leadingIcon: Image.asset(
+                    'assets/images/ic_start_mid.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.star_rate_outlined, color: AppColors.onBackground, size: 20),
+                  ),
+                  label: context.l10n.settingsRateApp,
+                  onTap: () => RateAppDialog.show(context, playStoreUrl: _playStoreUrl),
+                ),
+                const Divider(height: 1, indent: 52, color: AppColors.outline),
+                _SettingsItem(
+                  leadingIcon: const Icon(Icons.share_outlined, color: AppColors.onBackground, size: 20),
+                  label: context.l10n.settingsShareApp,
+                  onTap: () => SharePlus.instance.share(ShareParams(text: _shareText)),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: AppMetrics.spaceXl),
           Center(
             child: Text(
-              'BabyGenie v1.0.0',
+              context.l10n.appVersion,
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.onSurfaceVariant,
@@ -94,85 +101,17 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Coming soon!')),
-    );
-  }
-}
-
-class _SettingsSection extends StatelessWidget {
-
-  const _SettingsSection({required this.title, required this.items});
-  final String title;
-  final List<_SettingsItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppMetrics.screenPaddingHorizontal,
-            AppMetrics.spaceM,
-            AppMetrics.screenPaddingHorizontal,
-            AppMetrics.spaceXs,
-          ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: AppColors.onSurfaceVariant,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: AppMetrics.screenPaddingHorizontal,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceVariant,
-            borderRadius: BorderRadius.circular(AppMetrics.radiusM),
-          ),
-          child: Column(
-            children: items
-                .asMap()
-                .entries
-                .map((entry) => Column(
-                      children: [
-                        entry.value,
-                        if (entry.key < items.length - 1)
-                          const Divider(
-                            height: 1,
-                            indent: 52,
-                            color: AppColors.outline,
-                          ),
-                      ],
-                    ))
-                .toList(),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _SettingsItem extends StatelessWidget {
-
   const _SettingsItem({
-    required this.icon,
+    required this.leadingIcon,
     required this.label,
     required this.onTap,
-    this.trailingColor,
   });
-  final IconData icon;
+  final Widget leadingIcon;
   final String label;
   final VoidCallback onTap;
-  final Color? trailingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -186,25 +125,27 @@ class _SettingsItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.onBackground, size: 20),
+            SizedBox(width: 20, height: 20, child: leadingIcon),
             const SizedBox(width: AppMetrics.spaceM),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
-                  color:
-                      trailingColor ?? AppColors.onBackground,
-                  fontWeight: trailingColor != null
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+                  color: AppColors.onBackground,
                 ),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: trailingColor ?? AppColors.onSurfaceVariant,
+            Image.asset(
+              'assets/images/icon_right_arrow_gray.png',
+              width: 14,
+              height: 14,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.arrow_forward_ios,
+                size: 14,
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ],
         ),

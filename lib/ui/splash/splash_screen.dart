@@ -4,6 +4,7 @@ import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
 import 'package:flutter_app_factory_base/core/storage/prefs_service.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,7 +41,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Gradient background (placeholder for hero image)
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -50,7 +50,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
           ),
-          // Fade overlay
           Positioned(
             bottom: 0,
             left: 0,
@@ -66,16 +65,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
           ),
-          // Content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppMetrics.spaceXl),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Text(
-                    'BabyGenie',
-                    style: TextStyle(
+                  const Spacer(),
+                  // App icon (rounded corners, visible on dark/gradient bg)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/images/icon_app.png',
+                      width: 96,
+                      height: 96,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                  const SizedBox(height: AppMetrics.spaceM),
+                  // White text — ic_baby_genie_title.png is black so invisible on dark bg
+                  Text(
+                    context.l10n.appName,
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: AppColors.white,
@@ -83,15 +94,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppMetrics.spaceS),
-                  const Text(
-                    'Create magical baby moments',
-                    style: TextStyle(
+                  Text(
+                    context.l10n.splashTagline,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: AppMetrics.spaceXl),
+                  const Spacer(),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
                     child: const LinearProgressIndicator(
@@ -101,9 +112,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     ),
                   ),
                   const SizedBox(height: AppMetrics.spaceS),
-                  const Text(
-                    'This action may contain ads',
-                    style: TextStyle(fontSize: 12, color: AppColors.white),
+                  Text(
+                    context.l10n.splashAdDisclaimer,
+                    style: const TextStyle(fontSize: 12, color: AppColors.white),
                   ),
                   const SizedBox(height: AppMetrics.spaceXl),
                 ],

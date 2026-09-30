@@ -1,0 +1,361 @@
+{
+  "@@locale": "en",
+
+  "appName": "BabyGenie",
+  "@appName": {},
+
+  "splashTagline": "Create magical baby moments",
+  "@splashTagline": {},
+
+  "splashAdDisclaimer": "This action may contain ads",
+  "@splashAdDisclaimer": {},
+
+  "chooseLanguage": "Choose Language",
+  "@chooseLanguage": {},
+
+  "save": "Save",
+  "@save": {},
+
+  "onboarding1Title": "Discover Your\nFuture Baby",
+  "@onboarding1Title": {},
+
+  "onboarding1Desc": "See what your baby will look like with AI-powered face generation",
+  "@onboarding1Desc": {},
+
+  "onboarding2Title": "Baby Dance\nTemplates",
+  "@onboarding2Title": {},
+
+  "onboarding2Desc": "Create adorable dance videos with your baby using trending templates",
+  "@onboarding2Desc": {},
+
+  "onboarding3Title": "Family\nSimilarity",
+  "@onboarding3Title": {},
+
+  "onboarding3Desc": "Discover who your baby looks like most with our similarity detection",
+  "@onboarding3Desc": {},
+
+  "next": "Next",
+  "@next": {},
+
+  "getStarted": "Get Started",
+  "@getStarted": {},
+
+  "termsAgreement": "By continuing, you agree to our Terms & Privacy Policy",
+  "@termsAgreement": {},
+
+  "navHome": "Home",
+  "@navHome": {},
+
+  "navVideo": "Video",
+  "@navVideo": {},
+
+  "navPhoto": "Photo",
+  "@navPhoto": {},
+
+  "navProfile": "Profile",
+  "@navProfile": {},
+
+  "retry": "Retry",
+  "@retry": {},
+
+  "comingSoon": "Coming soon!",
+  "@comingSoon": {},
+
+  "cancel": "Cancel",
+  "@cancel": {},
+
+  "confirm": "Confirm",
+  "@confirm": {},
+
+  "error": "Error",
+  "@error": {},
+
+  "homeLoadError": "Failed to load home",
+  "@homeLoadError": {},
+
+  "profileTitle": "Profile",
+  "@profileTitle": {},
+
+  "profileUser": "BabyGenie User",
+  "@profileUser": {},
+
+  "profileCreations": "{count} creations",
+  "@profileCreations": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+
+  "filterAll": "All",
+  "@filterAll": {},
+
+  "noCreationsYet": "No creations yet",
+  "@noCreationsYet": {},
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {},
+
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {},
+
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "@settingsPrivacyPolicy": {},
+
+  "settingsRateApp": "Rate App",
+  "@settingsRateApp": {},
+
+  "settingsShareApp": "Share App",
+  "@settingsShareApp": {},
+
+  "appVersion": "BabyGenie v1.0.0",
+  "@appVersion": {},
+
+  "momsPhoto": "Mom's Photo",
+  "@momsPhoto": {},
+
+  "dadsPhoto": "Dad's Photo",
+  "@dadsPhoto": {},
+
+  "babysPhoto": "Baby's Photo",
+  "@babysPhoto": {},
+
+  "boyOrGirl": "Boy or Girl",
+  "@boyOrGirl": {},
+
+  "uploadPhotoHint": "Upload clear, front-facing photos for best results",
+  "@uploadPhotoHint": {},
+
+  "generateBabyPhoto": "Generate Baby Photo",
+  "@generateBabyPhoto": {},
+
+  "uploadPhoto": "Upload Photo",
+  "@uploadPhoto": {},
+
+  "tapToSelectImage": "Tap to select an Image",
+  "@tapToSelectImage": {},
+
+  "babyGirl": "Baby Girl",
+  "@babyGirl": {},
+
+  "babyBoy": "Baby Boy",
+  "@babyBoy": {},
+
+  "teenGirl": "Teen Girl",
+  "@teenGirl": {},
+
+  "teenBoy": "Teen Boy",
+  "@teenBoy": {},
+
+  "noTemplatesFound": "No templates found",
+  "@noTemplatesFound": {},
+
+  "paywallTitle": "BabyGenie PRO",
+  "@paywallTitle": {},
+
+  "paywallSubtitle": "Unlock all premium features",
+  "@paywallSubtitle": {},
+
+  "paywallTrial": "TRIAL",
+  "@paywallTrial": {},
+
+  "paywallContinue": "Continue",
+  "@paywallContinue": {},
+
+  "paywallCancelNote": "Cancel anytime · Restore purchases",
+  "@paywallCancelNote": {},
+
+  "uninstallSorry": "We’re truly sorry if we haven’t met your expectations.",
+  "@uninstallSorry": {},
+
+  "uninstallImprove": "Please let us know how we can improve.",
+  "@uninstallImprove": {},
+
+  "uninstallNotUseful": "Not much more useful than the default feature",
+  "@uninstallNotUseful": {},
+
+  "uninstallLaggy": "Unresponsive or Laggy",
+  "@uninstallLaggy": {},
+
+  "explore": "Explore",
+  "@explore": {},
+
+  "dontUninstall": "Don’t uninstall yet",
+  "@dontUninstall": {},
+
+  "stillUninstall": "Still want to uninstall",
+  "@stillUninstall": {},
+
+  "whyUninstall": "Why did you uninstall the app?",
+  "@whyUninstall": {},
+
+  "uninstall": "Uninstall",
+  "@uninstall": {},
+
+  "uninstallReasonDifficult": "Difficult to use",
+  "@uninstallReasonDifficult": {},
+
+  "uninstallReasonAds": "Too many ads",
+  "@uninstallReasonAds": {},
+
+  "uninstallReasonError": "Error Not Working",
+  "@uninstallReasonError": {},
+
+  "uninstallReasonBattery": "Fast battery drain",
+  "@uninstallReasonBattery": {},
+
+  "uninstallReasonOthers": "Others",
+  "@uninstallReasonOthers": {},
+
+  "uninstallConfirmTitle": "Are you sure?",
+  "@uninstallConfirmTitle": {},
+
+  "uninstallConfirmContent": "You want to uninstall this app?",
+  "@uninstallConfirmContent": {},
+
+  "skip": "Skip",
+  "@skip": {},
+
+  "bornBaby": "Born Baby",
+  "@bornBaby": {},
+
+  "unbornBaby": "Unborn Baby",
+  "@unbornBaby": {},
+
+  "createNow": "Create Now",
+  "@createNow": {},
+
+  "generatingAiBaby": "Generating AI Baby...",
+  "@generatingAiBaby": {},
+
+  "analyzingFacialFeatures": "Analyzing facial features and generating result",
+  "@analyzingFacialFeatures": {},
+
+  "generationComplete": "Generation complete! Saved to your creations.",
+  "@generationComplete": {},
+
+  "babyDanceTitle": "BabyDance",
+  "@babyDanceTitle": {},
+
+  "failedToLoadVideos": "Failed to load videos: {error}",
+  "@failedToLoadVideos": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "babyTemplateTitle": "BabyTemplate",
+  "@babyTemplateTitle": {},
+
+  "failedToLoadPhotos": "Failed to load photos: {error}",
+  "@failedToLoadPhotos": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "filterVideo": "Video",
+  "@filterVideo": {},
+
+  "filterPhoto": "Photo",
+  "@filterPhoto": {},
+
+  "workFilesAvailable": "Files only available for 7 days — save now",
+  "@workFilesAvailable": {},
+
+  "workGenerationFailed": "Generation failed. Please replace the photo and try again.",
+  "@workGenerationFailed": {},
+
+  "workWaiting": "Expected to wait for 30 minutes…",
+  "@workWaiting": {},
+
+  "creationCompleted": "Creation completed",
+  "@creationCompleted": {},
+
+  "taskSubmission": "Task Submission",
+  "@taskSubmission": {},
+
+  "completed": "Completed",
+  "@completed": {},
+
+  "generationFailed": "Generation failed",
+  "@generationFailed": {},
+
+  "generationOnTheWay": "Your {title} is on the way 🍼",
+  "@generationOnTheWay": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "generationWaitMsg": "This may take about 1–2 minutes.",
+  "@generationWaitMsg": {},
+
+  "somethingWentWrong": "Something went wrong.\nPlease try again.",
+  "@somethingWentWrong": {},
+
+  "viewNow": "View now",
+  "@viewNow": {},
+
+  "goBack": "Go back",
+  "@goBack": {},
+
+  "buyPoints": "✦ Buy Points",
+  "@buyPoints": {},
+
+  "submittingWait": "Submitting, please wait…",
+  "@submittingWait": {},
+
+  "myPhoto": "My Photo",
+  "@myPhoto": {},
+
+  "mothersPhoto": "Mother's Photo",
+  "@mothersPhoto": {},
+
+  "fathersPhoto": "Father's Photo",
+  "@fathersPhoto": {},
+
+  "detectSimilarity": "Detect Similarity",
+  "@detectSimilarity": {},
+
+  "babyPhotoLabel": "Baby Photo",
+  "@babyPhotoLabel": {},
+
+  "gender": "Gender",
+  "@gender": {},
+
+  "skinTone": "Skin Tone",
+  "@skinTone": {},
+
+  "ultrasoundPhoto": "Ultrasound Photo",
+  "@ultrasoundPhoto": {},
+
+  "viewYourBaby": "View Your Baby",
+  "@viewYourBaby": {},
+
+  "familyStyle": "Family Style",
+  "@familyStyle": {},
+
+  "generateFamilyPortrait": "Generate Family Portrait",
+  "@generateFamilyPortrait": {},
+
+  "photoGuidanceGood": "Include shoulders, varied backgrounds, clothing, emotions, and head angles.",
+  "@photoGuidanceGood": {},
+
+  "photoGuidanceBad": "Avoid covered faces, sunglasses, group shots, or heavy makeup that hides features.",
+  "@photoGuidanceBad": {},
+
+  "takeSelfie": "Take a Selfie",
+  "@takeSelfie": {},
+
+  "selectPhoto": "Select a Photo",
+  "@selectPhoto": {}
+}

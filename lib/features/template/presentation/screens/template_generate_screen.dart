@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class TemplateGenerateScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            'Born Baby',
+                            context.l10n.bornBaby,
                             style: TextStyle(
                               color: _isBornMode ? Colors.white : AppColors.onBackground,
                               fontWeight: FontWeight.bold,
@@ -122,7 +123,7 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            'Unborn Baby',
+                            context.l10n.unbornBaby,
                             style: TextStyle(
                               color: !_isBornMode ? Colors.white : AppColors.onBackground,
                               fontWeight: FontWeight.bold,
@@ -179,7 +180,7 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
                     alignment: Alignment.center,
                     children: [
                       Text(
-                        'Create Now',
+                        context.l10n.createNow,
                         style: TextStyle(
                           color: _canGenerate ? Colors.white : Colors.white.withValues(alpha: 0.8),
                           fontSize: 17,
@@ -226,9 +227,9 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
     return Column(
       children: [
         const SizedBox(height: 16),
-        const Text(
-          "Baby's Photo",
-          style: TextStyle(
+        Text(
+          context.l10n.babysPhoto,
+          style: const TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
             color: AppColors.onBackground,
@@ -254,9 +255,9 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
     return Column(
       children: [
         const SizedBox(height: 16),
-        const Text(
-          "Mother's Photo",
-          style: TextStyle(
+        Text(
+          context.l10n.mothersPhoto,
+          style: const TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
             color: AppColors.onBackground,
@@ -273,9 +274,9 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
           },
         ),
         const SizedBox(height: 20),
-        const Text(
-          "Father's Photo",
-          style: TextStyle(
+        Text(
+          context.l10n.fathersPhoto,
+          style: const TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
             color: AppColors.onBackground,
@@ -362,9 +363,9 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Upload Photo',
-                      style: TextStyle(
+                    Text(
+                      context.l10n.uploadPhoto,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFF9E9EB0),
                         fontWeight: FontWeight.w500,
@@ -384,24 +385,24 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          content: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
+          content: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
+                const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF6C5CE7)),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
-                  'Generating AI Baby...',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ctx.l10n.generatingAiBaby,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Analyzing facial features and generating result',
+                  ctx.l10n.analyzingFacialFeatures,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -415,9 +416,9 @@ class _TemplateGenerateScreenState extends State<TemplateGenerateScreen> {
         if (mounted) {
           Navigator.of(context, rootNavigator: true).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Generation complete! Saved to your creations.'),
-              backgroundColor: Color(0xFF6C5CE7),
+            SnackBar(
+              content: Text(context.l10n.generationComplete),
+              backgroundColor: const Color(0xFF6C5CE7),
             ),
           );
         }

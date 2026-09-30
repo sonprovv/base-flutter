@@ -8,12 +8,10 @@ import 'package:flutter_app_factory_base/core/config/providers.dart';
 import 'package:flutter_app_factory_base/core/storage/prefs_service.dart';
 import 'package:flutter_app_factory_base/data/services/baby_data_local_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> bootstrap(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

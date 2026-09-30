@@ -6,6 +6,7 @@ import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
 import 'package:flutter_app_factory_base/data/models/feature_item.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/features/home/presentation/view_models/home_view_model.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/play_on_visible_card.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/section_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,42 +34,16 @@ class HomeScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Text(
-                    'BabyGenie',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => context.push(AppRoute.paywall),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppMetrics.spaceS,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.gradientStart, AppColors.gradientEnd],
-                        ),
-                        borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star, color: AppColors.white, size: 14),
-                          SizedBox(width: 4),
-                          Text(
-                            'PRO',
-                            style: TextStyle(
-                              color: AppColors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                  Image.asset(
+                    'assets/images/ic_baby_genie_title.png',
+                    height: 28,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => Text(
+                      context.l10n.appName,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),
@@ -87,7 +62,7 @@ class HomeScreen extends ConsumerWidget {
                         const Icon(Icons.error_outline, color: AppColors.error, size: 40),
                         const SizedBox(height: 12),
                         Text(
-                          'Failed to load home: $e',
+                          '${context.l10n.homeLoadError}: $e',
                           textAlign: TextAlign.center,
                           style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
                         ),
@@ -95,7 +70,7 @@ class HomeScreen extends ConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: () => ref.refresh(homeViewModelProvider),
                           icon: const Icon(Icons.refresh, size: 18),
-                          label: const Text('Retry'),
+                          label: Text(context.l10n.retry),
                         ),
                       ],
                     ),

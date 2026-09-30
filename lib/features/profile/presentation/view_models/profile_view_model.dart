@@ -48,6 +48,16 @@ class ProfileViewModel extends AsyncNotifier<ProfileState> {
       state = AsyncData(current.copyWith(filter: filter));
     }
   }
+
+  Future<void> removeWork(int id) async {
+    final repo = ref.read(babyDataRepositoryProvider);
+    await repo.removeProfileWork(id);
+    final works = await repo.getProfileWorks();
+    final current = state.asData?.value;
+    if (current != null) {
+      state = AsyncData(current.copyWith(works: works));
+    }
+  }
 }
 
 final profileViewModelProvider =

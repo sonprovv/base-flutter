@@ -53,9 +53,9 @@ class NetworkImageCard extends StatelessWidget {
                                   memCacheHeight: height.isFinite && height > 0 ? (height * 2).ceil() : null,
                                   fadeInDuration: const Duration(milliseconds: 180),
                                   placeholder: (c, u) => _placeholder(),
-                                  errorWidget: (c, u, e) => _placeholder(),
+                                  errorWidget: (c, u, e) => _errorWidget(),
                                 )
-                              : _placeholder(),
+                              : _errorWidget(),
                     ),
               ?overlay,
             ],
@@ -73,6 +73,19 @@ class NetworkImageCard extends StatelessWidget {
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => const Center(
           child: Icon(Icons.image_outlined, color: AppColors.textHint, size: 28),
+        ),
+      ),
+    );
+  }
+
+  Widget _errorWidget() {
+    return Container(
+      color: AppColors.surfaceVariant,
+      child: Image.asset(
+        'assets/images/ic_no_network.png',
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(Icons.signal_wifi_off_outlined, color: AppColors.textHint, size: 28),
         ),
       ),
     );

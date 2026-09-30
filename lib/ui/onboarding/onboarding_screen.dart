@@ -3,37 +3,37 @@ import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
 import 'package:flutter_app_factory_base/core/storage/prefs_service.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class _OnboardingPage {
-
   const _OnboardingPage({
-    required this.title,
-    required this.description,
-    required this.gradientColors,
+    required this.assetPath,
+    required this.getTitle,
+    required this.getDesc,
   });
-  final String title;
-  final String description;
-  final List<Color> gradientColors;
+  final String assetPath;
+  final String Function(BuildContext) getTitle;
+  final String Function(BuildContext) getDesc;
 }
 
-const _pages = [
+List<_OnboardingPage> _buildPages() => [
   _OnboardingPage(
-    title: 'Discover Your\nFuture Baby',
-    description: 'See what your baby will look like with AI-powered face generation',
-    gradientColors: [Color(0xFF6662FE), Color(0xFFA448FF)],
+    assetPath: 'assets/images/guide_video_pic1.png',
+    getTitle: (ctx) => ctx.l10n.onboarding1Title,
+    getDesc: (ctx) => ctx.l10n.onboarding1Desc,
   ),
   _OnboardingPage(
-    title: 'Baby Dance\nTemplates',
-    description: 'Create adorable dance videos with your baby using trending templates',
-    gradientColors: [Color(0xFFFF6100), Color(0xFFFF9500)],
+    assetPath: 'assets/images/guide_video_pic2.png',
+    getTitle: (ctx) => ctx.l10n.onboarding2Title,
+    getDesc: (ctx) => ctx.l10n.onboarding2Desc,
   ),
   _OnboardingPage(
-    title: 'Family\nSimilarity',
-    description: 'Discover who your baby looks like most with our similarity detection',
-    gradientColors: [Color(0xFF00C897), Color(0xFF00A3FF)],
+    assetPath: 'assets/images/guide_video_pic3.png',
+    getTitle: (ctx) => ctx.l10n.onboarding3Title,
+    getDesc: (ctx) => ctx.l10n.onboarding3Desc,
   ),
 ];
 
@@ -47,6 +47,13 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _controller = PageController();
   int _currentPage = 0;
+  late final List<_OnboardingPage> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = _buildPages();
+  }
 
   @override
   void dispose() {
@@ -57,7 +64,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _onNext() {
     if (_currentPage < _pages.length - 1) {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
       );
     } else {
@@ -66,14 +73,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _finish() {
-    final prefs = ref.read(prefsServiceProvider);
-    prefs.isCompletedOnboarding = true;
+    ref.read(prefsServiceProvider).isCompletedOnboarding = true;
     context.go(AppRoute.main);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -81,9 +88,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             controller: _controller,
             itemCount: _pages.length,
             onPageChanged: (i) => setState(() => _currentPage = i),
-            itemBuilder: (context, index) => _PageView(page: _pages[index]),
+            itemBuilder: (context, index) => _HeroPage(page: _pages[index]),
           ),
-          // Bottom overlay
+
+          Positioned(
+            top: MediaQuery.of(context).padding.top + AppMetrics.spaceS,
+            right: AppMetrics.screenPaddingHorizontal,
+            child: AnimatedOpacity(
+              opacity: _currentPage < _pages.length - 1 ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: TextButton(
+                onPressed: _currentPage < _pages.length - 1 ? _finish : null,
+                child: Text(
+                  context.l10n.skip,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -92,7 +119,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
                   AppMetrics.spaceXl,
-                  AppMetrics.spaceM,
+                  0,
                   AppMetrics.spaceXl,
                   AppMetrics.spaceM,
                 ),
@@ -102,45 +129,56 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     SmoothPageIndicator(
                       controller: _controller,
                       count: _pages.length,
-                      effect: const WormEffect(
+                      effect: const ExpandingDotsEffect(
                         dotColor: Colors.white38,
-                        activeDotColor: AppColors.primary,
-                        dotHeight: 8,
-                        dotWidth: 8,
+                        activeDotColor: AppColors.white,
+                        dotHeight: 6,
+                        dotWidth: 6,
+                        expansionFactor: 4,
+                        spacing: 5,
                       ),
                     ),
-                    const SizedBox(height: AppMetrics.spaceM),
+                    const SizedBox(height: AppMetrics.spaceL),
+
                     SizedBox(
                       width: double.infinity,
                       height: AppMetrics.buttonHeight,
-                      child: FilledButton.icon(
-                        onPressed: _onNext,
-                        icon: _currentPage == _pages.length - 1
-                            ? const SizedBox.shrink()
-                            : const Icon(Icons.chevron_right),
-                        label: Text(
-                          _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.gradientStart, AppColors.gradientEnd],
                           ),
+                          borderRadius:
+                              BorderRadius.circular(AppMetrics.radiusPill),
                         ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
+                        child: FilledButton(
+                          onPressed: _onNext,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppMetrics.radiusPill),
+                            ),
+                          ),
+                          child: Text(
+                            _currentPage == _pages.length - 1
+                                ? context.l10n.getStarted
+                                : context.l10n.next,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.white,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppMetrics.spaceM),
-                    const Text(
-                      'By continuing, you agree to our Terms & Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.white,
-                      ),
+                    const SizedBox(height: AppMetrics.spaceS),
+
+                    Text(
+                      context.l10n.termsAgreement,
+                      style: const TextStyle(fontSize: 11, color: Colors.white54),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -154,52 +192,70 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class _PageView extends StatelessWidget {
-
-  const _PageView({required this.page});
+class _HeroPage extends StatelessWidget {
+  const _HeroPage({required this.page});
   final _OnboardingPage page;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Stack(
       fit: StackFit.expand,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: page.gradientColors,
-            ),
-          ),
+        Image.asset(
+          page.assetPath,
+          fit: BoxFit.cover,
+          width: size.width,
+          height: size.height,
+          errorBuilder: (_, __, ___) =>
+              const ColoredBox(color: Color(0xFF1A1A2E)),
         ),
-        // Fade to dark at bottom
-        Positioned(
-          bottom: 0,
+
+        const Positioned(
+          top: 0,
           left: 0,
           right: 0,
-          height: MediaQuery.of(context).size.height * 0.55,
-          child: Container(
-            decoration: const BoxDecoration(
+          height: 120,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Color(0xCC000000)],
+                colors: [Color(0xCC000000), Colors.transparent],
               ),
             ),
           ),
         ),
+
         Positioned(
-          bottom: 200,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: size.height * 0.55,
+          child: const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Color(0xF0000000)],
+                stops: [0.0, 0.8],
+              ),
+            ),
+          ),
+        ),
+
+        Positioned(
+          bottom: 175,
           left: AppMetrics.screenPaddingHorizontal,
           right: AppMetrics.screenPaddingHorizontal,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                page.title,
+                page.getTitle(context),
                 style: const TextStyle(
-                  fontSize: 28,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: AppColors.white,
                   height: 1.2,
@@ -207,13 +263,13 @@ class _PageView extends StatelessWidget {
               ),
               const SizedBox(height: AppMetrics.spaceS),
               Text(
-                page.description,
+                page.getDesc(context),
                 style: const TextStyle(
-                  fontSize: 15,
-                  color: AppColors.white,
-                  height: 1.4,
+                  fontSize: 14,
+                  color: Colors.white70,
+                  height: 1.5,
                 ),
-                maxLines: 2,
+                maxLines: 3,
               ),
             ],
           ),

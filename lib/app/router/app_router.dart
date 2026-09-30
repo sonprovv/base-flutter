@@ -1,9 +1,13 @@
+import 'package:flutter_app_factory_base/data/models/profile_work.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/features/generate/presentation/screens/family_similarity_screen.dart';
 import 'package:flutter_app_factory_base/features/generate/presentation/screens/future_baby_screen.dart';
 import 'package:flutter_app_factory_base/features/generate/presentation/screens/future_family_screen.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/screens/generating_screen.dart';
 import 'package:flutter_app_factory_base/features/generate/presentation/screens/ultrasound_viewer_screen.dart';
 import 'package:flutter_app_factory_base/features/paywall/presentation/screens/paywall_screen.dart';
+import 'package:flutter_app_factory_base/features/photo/presentation/screens/photo_upload_reminder_screen.dart';
+import 'package:flutter_app_factory_base/features/profile/presentation/screens/profile_work_detail_screen.dart';
 import 'package:flutter_app_factory_base/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter_app_factory_base/features/template/presentation/screens/dance_detail_screen.dart';
 import 'package:flutter_app_factory_base/features/template/presentation/screens/photo_detail_screen.dart';
@@ -32,6 +36,9 @@ abstract final class AppRoute {
   static const danceDetail = '/template/dance-detail';
   static const photoDetail = '/template/photo-detail';
   static const templateGenerate = '/template/generate';
+  static const photoUploadReminder = '/photo/upload-reminder';
+  static const generating = '/generate/generating';
+  static const profileWorkDetail = '/profile/work-detail';
   static const settings = '/settings';
   static const uninstall = '/uninstall';
   static const askUninstall = '/uninstall/ask';
@@ -55,7 +62,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoute.main,
-        builder: (context, state) => const MainScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final tab = extra?['tab'] as int? ?? 0;
+          return MainScreen(initialTab: tab);
+        },
       ),
       GoRoute(
         path: AppRoute.paywall,
@@ -100,6 +111,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: AppRoute.photoUploadReminder,
+        builder: (context, state) => const PhotoUploadReminderScreen(),
+      ),
+      GoRoute(
         path: AppRoute.settings,
         builder: (context, state) => const SettingsScreen(),
       ),
@@ -108,6 +123,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final template = state.extra as TemplateItem?;
           return TemplateGenerateScreen(template: template);
+        },
+      ),
+      GoRoute(
+        path: AppRoute.generating,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return GeneratingScreen(
+            featureTitle: extra['featureTitle'] as String,
+            momPath: extra['momPath'] as String,
+            dadPath: extra['dadPath'] as String,
+            prompt: extra['prompt'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoute.profileWorkDetail,
+        builder: (context, state) {
+          final work = state.extra as ProfileWork;
+          return ProfileWorkDetailScreen(work: work);
         },
       ),
       GoRoute(

@@ -35,10 +35,30 @@ class VideoThumbnailCard extends StatefulWidget {
   State<VideoThumbnailCard> createState() => _VideoThumbnailCardState();
 }
 
-class _VideoThumbnailCardState extends State<VideoThumbnailCard> {
+class _VideoThumbnailCardState extends State<VideoThumbnailCard>
+    with WidgetsBindingObserver {
   VideoPlayerController? _controller;
   bool _initialized = false;
   bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        unawaited(_controller?.pause());
+      case AppLifecycleState.resumed:
+        if (_visible) unawaited(_controller?.play());
+    }
+  }
 
   void _onVisibilityChanged(VisibilityInfo info) {
     final visible = info.visibleFraction >= 0.5;
@@ -75,6 +95,7 @@ class _VideoThumbnailCardState extends State<VideoThumbnailCard> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_controller?.dispose());
     super.dispose();
   }

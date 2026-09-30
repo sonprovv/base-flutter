@@ -4,7 +4,7 @@ import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
 import 'package:flutter_app_factory_base/data/models/profile_work.dart';
 import 'package:flutter_app_factory_base/features/profile/presentation/view_models/profile_view_model.dart';
-import 'package:flutter_app_factory_base/ui/core/widgets/network_image_card.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,9 +52,9 @@ class _ProfileContent extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Text(
-                      'Profile',
-                      style: TextStyle(
+                    Text(
+                      context.l10n.profileTitle,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: AppColors.onBackground,
@@ -82,10 +82,18 @@ class _ProfileContent extends ConsumerWidget {
                     CircleAvatar(
                       radius: AppMetrics.profileAvatarSize / 2,
                       backgroundColor: AppColors.primaryContainer,
-                      child: const Icon(
-                        Icons.person,
-                        color: AppColors.primary,
-                        size: 28,
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/ic_profile_mine.png',
+                          width: AppMetrics.profileAvatarSize,
+                          height: AppMetrics.profileAvatarSize,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                            size: 28,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppMetrics.spaceM),
@@ -93,9 +101,9 @@ class _ProfileContent extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'BabyGenie User',
-                            style: TextStyle(
+                          Text(
+                            context.l10n.profileUser,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: AppColors.onBackground,
@@ -103,7 +111,7 @@ class _ProfileContent extends ConsumerWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '${state.works.length} creations',
+                            context.l10n.profileCreations(state.works.length),
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.onSurfaceVariant,
@@ -113,53 +121,6 @@ class _ProfileContent extends ConsumerWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
-              // PRO banner
-              GestureDetector(
-                onTap: () => context.push(AppRoute.paywall),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: AppMetrics.screenPaddingHorizontal,
-                    vertical: AppMetrics.spaceXs,
-                  ),
-                  padding: const EdgeInsets.all(AppMetrics.spaceM),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.gradientStart, AppColors.gradientEnd],
-                    ),
-                    borderRadius: BorderRadius.circular(AppMetrics.radiusM),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.star, color: AppColors.white, size: 20),
-                      SizedBox(width: AppMetrics.spaceS),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Upgrade to PRO',
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              'Unlock unlimited generations',
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.arrow_forward_ios,
-                          color: AppColors.white, size: 14),
-                    ],
-                  ),
                 ),
               ),
               // Filter chips
@@ -172,9 +133,9 @@ class _ProfileContent extends ConsumerWidget {
                   children: WorkFilter.values.map((f) {
                     final isSelected = state.filter == f;
                     final label = switch (f) {
-                      WorkFilter.all => 'All',
-                      WorkFilter.video => 'Video',
-                      WorkFilter.photo => 'Photo',
+                      WorkFilter.all => context.l10n.filterAll,
+                      WorkFilter.video => context.l10n.filterVideo,
+                      WorkFilter.photo => context.l10n.filterPhoto,
                     };
                     return Padding(
                       padding: const EdgeInsets.only(right: AppMetrics.spaceXs),
@@ -215,14 +176,31 @@ class _ProfileContent extends ConsumerWidget {
           ),
         ),
         if (state.filtered.isEmpty)
-          const SliverFillRemaining(
+          SliverFillRemaining(
             child: Center(
-              child: Text(
-                'No creations yet',
-                style: TextStyle(
-                  color: AppColors.onSurfaceVariant,
-                  fontSize: 14,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/icon_mapstotage_frg_nodata.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.photo_library_outlined,
+                      color: AppColors.onSurfaceVariant,
+                      size: 64,
+                    ),
+                  ),
+                  const SizedBox(height: AppMetrics.spaceS),
+                  Text(
+                    context.l10n.noCreationsYet,
+                    style: const TextStyle(
+                      color: AppColors.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
           )
@@ -231,17 +209,14 @@ class _ProfileContent extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(
               horizontal: AppMetrics.screenPaddingHorizontal,
             ),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppMetrics.spaceXs,
-                mainAxisSpacing: AppMetrics.spaceXs,
-                childAspectRatio: 0.75,
-              ),
+            sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final work = state.filtered[index];
-                  return _WorkCard(work: work);
+                  return _WorkItem(
+                    work: work,
+                    onDelete: () => vm.removeWork(work.id),
+                  );
                 },
                 childCount: state.filtered.length,
               ),
@@ -253,59 +228,171 @@ class _ProfileContent extends ConsumerWidget {
   }
 }
 
-class _WorkCard extends StatelessWidget {
+class _WorkItem extends StatelessWidget {
+  const _WorkItem({required this.work, required this.onDelete});
+  final ProfileWork work;
+  final VoidCallback onDelete;
 
-  const _WorkCard({required this.work});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: work.isCompleted
+          ? () => context.push(AppRoute.profileWorkDetail, extra: work)
+          : null,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(10),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Left cover 92×122
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
+              ),
+              child: SizedBox(
+                width: 92,
+                height: 122,
+                child: _CoverImage(work: work),
+              ),
+            ),
+            // Right info
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      work.name,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _statusMessage(work, context.l10n),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: work.isFailed
+                            ? AppColors.error
+                            : const Color(0xFFE8A12B),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatTime(work.createdAt),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Delete icon
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(
+                Icons.delete_outline,
+                size: 20,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _statusMessage(ProfileWork w, AppL10n l10n) {
+    if (w.isCompleted) return l10n.workFilesAvailable;
+    if (w.isFailed) return l10n.workGenerationFailed;
+    return l10n.workWaiting;
+  }
+
+  String _formatTime(String iso) {
+    if (iso.isEmpty) return '';
+    try {
+      final dt = DateTime.parse(iso).toLocal();
+      return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} '
+          '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return iso;
+    }
+  }
+}
+
+class _CoverImage extends StatelessWidget {
+  const _CoverImage({required this.work});
   final ProfileWork work;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        NetworkImageCard(
-          url: work.coverUrl.isNotEmpty ? work.coverUrl : work.previewWebpUrl,
-          width: double.infinity,
-          height: double.infinity,
-          borderRadius: AppMetrics.radiusM,
-          onTap: () {},
-        ),
-        if (work.isVideo)
-          const Positioned(
-            top: 8,
-            right: 8,
-            child: Icon(Icons.play_circle_fill,
-                color: AppColors.white, size: 24),
-          ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(AppMetrics.spaceXs),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black54],
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(AppMetrics.radiusM),
-                bottomRight: Radius.circular(AppMetrics.radiusM),
-              ),
-            ),
-            child: Text(
-              work.name,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: AppColors.white,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    final url = work.coverUrl.isNotEmpty ? work.coverUrl : work.previewWebpUrl;
+
+    if (work.isProcessing) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (url.isNotEmpty)
+            Image.network(url, fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _placeholder())
+          else
+            _placeholder(),
+          Container(color: Colors.black54),
+          const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+              strokeWidth: 2,
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
+
+    if (work.isFailed) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          _placeholder(),
+          const Center(
+            child: Icon(Icons.error_outline, color: AppColors.error, size: 32),
+          ),
+        ],
+      );
+    }
+
+    // completed
+    if (url.isNotEmpty) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _placeholder(),
+      );
+    }
+    return _placeholder();
   }
+
+  Widget _placeholder() => Container(
+        color: AppColors.surfaceVariant,
+        child: const Icon(Icons.image_outlined,
+            size: 32, color: AppColors.textHint),
+      );
 }

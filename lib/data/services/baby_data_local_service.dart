@@ -88,7 +88,7 @@ class BabyDataLocalService {
   Future<List<CategoryItem>> getPhotoTemplates() async {
     final json = await _loadJson('assets/data/photo_templates.json');
     final list = json['data']['category_list'] as List<dynamic>? ?? [];
-    return list.mapIndexed((i, e) => CategoryItem.fromJson(e as Map<String, dynamic>, isGrid: i == 0)).toList();
+    return list.mapIndexed((i, e) => CategoryItem.fromJson(e as Map<String, dynamic>, isGrid: false)).toList();
   }
 
   Future<List<ProfileWork>> getProfileWorks() async {

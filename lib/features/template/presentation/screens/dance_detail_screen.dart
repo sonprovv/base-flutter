@@ -4,11 +4,11 @@ import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/data/repositories/baby_data_repository.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/template_detail_preview_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+import 'package:video_player/video_player.dart';
 
 class DanceDetailScreen extends ConsumerStatefulWidget {
   const DanceDetailScreen({super.key, required this.template});
@@ -21,8 +21,7 @@ class DanceDetailScreen extends ConsumerStatefulWidget {
 
 class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
   late PageController _pageController;
-  late Player _player;
-  late VideoController _videoController;
+  VideoPlayerController? _videoController;
 
   List<TemplateItem> _items = [];
   int _currentIndex = 0;
@@ -33,67 +32,78 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
     super.initState();
     _items = [widget.template];
     _pageController = PageController(viewportFraction: 0.82);
-    _player = Player();
-    _videoController = VideoController(_player);
-
-    // Start playing the initial template immediately if it has a video.
-    final initialUrl = widget.template.previewMp4Url;
-    if (initialUrl.isNotEmpty) {
-      unawaited(_player.open(Media(initialUrl)));
-    }
-
     unawaited(_loadTemplates());
   }
 
   Future<void> _loadTemplates() async {
     try {
       final repo = ref.read(babyDataRepositoryProvider);
-      final categories = await repo.getDanceTemplates();
-      final targetCat = categories.firstWhere(
+      final dance = await repo.getDanceTemplates();
+      final recommends = await repo.getHomeRecommends();
+
+      // Search across ALL sources: match by category name first, then by template ID.
+      final all = [...recommends, ...dance];
+      final targetName = widget.template.category;
+      CategoryItem? targetCat;
+      if (targetName.isNotEmpty) {
+        for (final cat in all) {
+          if (cat.name == targetName) { targetCat = cat; break; }
+        }
+      }
+      targetCat ??= all.firstWhere(
         (cat) => cat.templates.any((t) => t.id == widget.template.id),
-        orElse: () => categories.isNotEmpty ? categories.first : categories.first,
+        orElse: () => dance.isNotEmpty ? dance.first : all.first,
       );
 
       final list = targetCat.templates;
       if (list.isNotEmpty && mounted) {
         final initialIndex = list.indexWhere((t) => t.id == widget.template.id);
         final safeIndex = initialIndex >= 0 ? initialIndex : 0;
+        _pageController.dispose();
+        _pageController = PageController(viewportFraction: 0.82, initialPage: safeIndex);
         setState(() {
           _items = list;
           _currentIndex = safeIndex;
           _isLoading = false;
         });
-        // Re-open with the confirmed URL from the full list (same item, no flicker).
-        final url = list[safeIndex].previewMp4Url;
-        if (url.isNotEmpty) {
-          unawaited(_player.open(Media(url)));
-        }
-        if (safeIndex > 0) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_pageController.hasClients && mounted) {
-              _pageController.jumpToPage(safeIndex);
-            }
-          });
-        }
+        unawaited(_playVideo(list[safeIndex].previewMp4Url));
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  Future<void> _playVideo(String url) async {
+    final old = _videoController;
+    _videoController = null;
+
+    await old?.dispose();
+
+    if (url.isEmpty || !mounted) return;
+
+    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    try {
+      await controller.initialize();
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+      await controller.setLooping(true);
+      await controller.play();
+      setState(() => _videoController = controller);
+    } catch (_) {
+      await controller.dispose();
+    }
+  }
+
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
-    final url = _items[index].previewMp4Url;
-    if (url.isNotEmpty) {
-      unawaited(_player.open(Media(url)));
-    } else {
-      unawaited(_player.stop());
-    }
+    unawaited(_playVideo(_items[index].previewMp4Url));
   }
 
   @override
   void dispose() {
-    unawaited(_player.dispose());
+    unawaited(_videoController?.dispose());
     _pageController.dispose();
     super.dispose();
   }
@@ -113,10 +123,12 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.onBackground,
-                      size: 26,
+                    icon: Image.asset(
+                      'assets/images/icon_back.png',
+                      width: 26,
+                      height: 26,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.arrow_back, color: AppColors.onBackground, size: 26),
                     ),
                     onPressed: () => context.pop(),
                   ),
@@ -161,8 +173,6 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
                       onPageChanged: _onPageChanged,
                       itemBuilder: (context, index) {
                         final item = _items[index];
-                        // Only the center card gets the live VideoController;
-                        // side peeking cards show a static cover image.
                         final isCenter = index == _currentIndex;
                         return AnimatedBuilder(
                           animation: _pageController,
@@ -186,9 +196,7 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 6),
                             child: TemplateDetailPreviewCard(
                               item: item,
-                              videoController: isCenter && item.previewMp4Url.isNotEmpty
-                                  ? _videoController
-                                  : null,
+                              videoController: isCenter ? _videoController : null,
                             ),
                           ),
                         );
@@ -224,9 +232,9 @@ class _DanceDetailScreenState extends ConsumerState<DanceDetailScreen> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const Text(
-                        'Generate Baby Photo',
-                        style: TextStyle(
+                      Text(
+                        context.l10n.generateBabyPhoto,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,

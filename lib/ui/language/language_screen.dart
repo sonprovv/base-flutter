@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/core/l10n/locale_provider.dart';
 import 'package:flutter_app_factory_base/core/storage/prefs_service.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,8 +48,8 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
 
   void _onSave() {
     if (_selected == null) return;
+    ref.read(localeProvider.notifier).set(_selected!);
     final prefs = ref.read(prefsServiceProvider);
-    prefs.selectedLanguage = _selected!;
     if (prefs.isCompletedOnboarding && !prefs.isSecondOpen) {
       context.go(AppRoute.main);
     } else {
@@ -74,13 +76,19 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
                 children: [
                   if (!widget.fromSplash)
                     IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Image.asset(
+                        'assets/images/icon_back.png',
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.arrow_back),
+                      ),
                       onPressed: () => context.pop(),
                     ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Choose Language',
-                      style: TextStyle(
+                      context.l10n.chooseLanguage,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -90,9 +98,9 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
                   if (_selected != null)
                     TextButton(
                       onPressed: _onSave,
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
+                      child: Text(
+                        context.l10n.save,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primary,

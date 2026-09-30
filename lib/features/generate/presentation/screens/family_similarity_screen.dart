@@ -1,86 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_shared.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
-import 'package:flutter_app_factory_base/ui/core/widgets/photo_picker_widget.dart';
+import 'package:go_router/go_router.dart';
 
-class FamilySimilarityScreen extends StatelessWidget {
+class FamilySimilarityScreen extends StatefulWidget {
   const FamilySimilarityScreen({super.key});
 
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Coming soon!')),
-    );
+  @override
+  State<FamilySimilarityScreen> createState() => _FamilySimilarityScreenState();
+}
+
+class _FamilySimilarityScreenState extends State<FamilySimilarityScreen> {
+  String? _motherPath;
+  String? _fatherPath;
+  String? _babyPath;
+
+  void _generate() {
+    context.push(AppRoute.generating, extra: {
+      'featureTitle': 'family similarity',
+      'momPath': _motherPath!,
+      'dadPath': _fatherPath!,
+      'prompt': 'family similarity analysis with baby photo',
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final canDetect = _motherPath != null && _fatherPath != null && _babyPath != null;
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: const BackButton(color: AppColors.onBackground),
-        title: const Text(
-          'Family Similarity',
-          style: TextStyle(
-            color: AppColors.onBackground,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppMetrics.screenPaddingHorizontal),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Upload photos to detect family resemblance',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.onSurfaceVariant,
+        child: Column(
+          children: [
+            const GenHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppMetrics.screenPaddingHorizontal,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: AppMetrics.spaceS),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: LabeledPicker(
+                            label: context.l10n.mothersPhoto,
+                            pickedPath: _motherPath,
+                            onDelete: () => setState(() => _motherPath = null),
+                            onTap: () async {
+                              final path = await context.push<String?>(
+                                AppRoute.photoUploadReminder,
+                              );
+                              if (path != null && mounted) {
+                                setState(() => _motherPath = path);
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: AppMetrics.spaceM),
+                        Expanded(
+                          child: LabeledPicker(
+                            label: context.l10n.fathersPhoto,
+                            pickedPath: _fatherPath,
+                            onDelete: () => setState(() => _fatherPath = null),
+                            onTap: () async {
+                              final path = await context.push<String?>(
+                                AppRoute.photoUploadReminder,
+                              );
+                              if (path != null && mounted) {
+                                setState(() => _fatherPath = path);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const CurveArrow(),
+                    Text(
+                      context.l10n.babyPhotoLabel,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: AppMetrics.spaceM),
+                    LargePicker(
+                      pickedPath: _babyPath,
+                      onDelete: () => setState(() => _babyPath = null),
+                      onTap: () async {
+                        final path = await context.push<String?>(
+                          AppRoute.photoUploadReminder,
+                        );
+                        if (path != null && mounted) {
+                          setState(() => _babyPath = path);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: AppMetrics.spaceXl),
+                  ],
                 ),
               ),
-              const SizedBox(height: AppMetrics.spaceL),
-              Row(
-                children: [
-                  Expanded(
-                    child: PhotoPickerWidget(
-                      key: const ValueKey('picker_similarity_mother'),
-                      label: 'Mother',
-                      icon: Icons.face_3,
-                      onTap: () => _showComingSoon(context),
-                    ),
-                  ),
-                  const SizedBox(width: AppMetrics.spaceXs),
-                  Expanded(
-                    child: PhotoPickerWidget(
-                      key: const ValueKey('picker_similarity_father'),
-                      label: 'Father',
-                      icon: Icons.face,
-                      onTap: () => _showComingSoon(context),
-                    ),
-                  ),
-                  const SizedBox(width: AppMetrics.spaceXs),
-                  Expanded(
-                    child: PhotoPickerWidget(
-                      key: const ValueKey('picker_similarity_baby'),
-                      label: 'Baby',
-                      icon: Icons.child_care,
-                      onTap: () => _showComingSoon(context),
-                    ),
-                  ),
-                ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppMetrics.screenPaddingHorizontal,
+                8,
+                AppMetrics.screenPaddingHorizontal,
+                20,
               ),
-              const SizedBox(height: AppMetrics.spaceXl),
-              GradientCtaButton(
+              child: GradientCtaButton(
                 key: const ValueKey('btn_similarity_detect'),
-                label: 'Detect Similarity',
-                onTap: () => _showComingSoon(context),
+                label: context.l10n.detectSimilarity,
+                points: 3,
+                enabled: canDetect,
+                onTap: _generate,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

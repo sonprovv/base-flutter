@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
+import 'package:flutter_app_factory_base/features/generate/presentation/widgets/generate_shared.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/gradient_cta_button.dart';
-import 'package:flutter_app_factory_base/ui/core/widgets/photo_picker_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class UltrasoundViewerScreen extends StatefulWidget {
   const UltrasoundViewerScreen({super.key});
@@ -12,8 +15,10 @@ class UltrasoundViewerScreen extends StatefulWidget {
 }
 
 class _UltrasoundViewerScreenState extends State<UltrasoundViewerScreen> {
-  int _selectedGender = 0; // 0=Boy, 1=Girl
+  // 0 = Baby Girl, 1 = Baby Boy (matches reference order)
+  int _selectedGender = 0;
   int _selectedSkinTone = 0;
+  String? _photoPath;
 
   static const _skinTones = [
     AppColors.skinTone1,
@@ -22,141 +27,158 @@ class _UltrasoundViewerScreenState extends State<UltrasoundViewerScreen> {
     AppColors.skinTone4,
   ];
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Coming soon!')),
-    );
+  static const _genderPrompts = ['baby girl', 'baby boy'];
+
+  void _generate() {
+    final skinIdx = _selectedSkinTone + 1;
+    context.push(AppRoute.generating, extra: {
+      'featureTitle': 'ultrasound viewer',
+      'momPath': _photoPath!,
+      'dadPath': _photoPath!,
+      'prompt': '${_genderPrompts[_selectedGender]}, skin tone $skinIdx, from ultrasound',
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        leading: const BackButton(color: AppColors.onBackground),
-        title: const Text(
-          'Ultrasound Viewer',
-          style: TextStyle(
-            color: AppColors.onBackground,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppMetrics.screenPaddingHorizontal),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Upload an ultrasound image to visualize your baby',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.onSurfaceVariant,
+        child: Column(
+          children: [
+            const GenHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppMetrics.screenPaddingHorizontal,
                 ),
-              ),
-              const SizedBox(height: AppMetrics.spaceL),
-              // Gender toggle
-              const Text(
-                'Baby Gender',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onBackground,
-                ),
-              ),
-              const SizedBox(height: AppMetrics.spaceS),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
-                ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _GenderToggleButton(
-                      label: 'Boy',
-                      isSelected: _selectedGender == 0,
-                      color: const Color(0xFF90CAF9),
-                      onTap: () => setState(() => _selectedGender = 0),
+                    const SizedBox(height: AppMetrics.spaceM),
+                    // Gender section
+                    Text(
+                      context.l10n.gender,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onBackground,
+                      ),
                     ),
-                    _GenderToggleButton(
-                      label: 'Girl',
-                      isSelected: _selectedGender == 1,
-                      color: AppColors.genderGirlBorder,
-                      onTap: () => setState(() => _selectedGender = 1),
+                    const SizedBox(height: AppMetrics.spaceM),
+                    Row(
+                      children: [
+                        _GenderButton(
+                          label: context.l10n.babyGirl,
+                          isSelected: _selectedGender == 0,
+                          selectedColor: AppColors.genderGirlBorder,
+                          onTap: () => setState(() => _selectedGender = 0),
+                        ),
+                        const SizedBox(width: AppMetrics.spaceM),
+                        _GenderButton(
+                          label: context.l10n.babyBoy,
+                          isSelected: _selectedGender == 1,
+                          selectedColor: const Color(0xFF90CAF9),
+                          onTap: () => setState(() => _selectedGender = 1),
+                        ),
+                      ],
                     ),
+                    const DashedDivider(),
+                    // Skin Tone section
+                    Text(
+                      context.l10n.skinTone,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: AppMetrics.spaceM),
+                    Row(
+                      children: List.generate(_skinTones.length, (i) {
+                        final selected = _selectedSkinTone == i;
+                        return GestureDetector(
+                          onTap: () =>
+                              setState(() => _selectedSkinTone = i),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            margin: const EdgeInsets.only(
+                                right: AppMetrics.spaceM),
+                            decoration: BoxDecoration(
+                              color: _skinTones[i],
+                              shape: BoxShape.circle,
+                              border: selected
+                                  ? Border.all(
+                                      color: AppColors.primary,
+                                      width: 3,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    const DashedDivider(),
+                    // Ultrasound Photo section
+                    Text(
+                      context.l10n.ultrasoundPhoto,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onBackground,
+                      ),
+                    ),
+                    const SizedBox(height: AppMetrics.spaceM),
+                    LargePicker(
+                      pickedPath: _photoPath,
+                      onDelete: () => setState(() => _photoPath = null),
+                      onTap: () async {
+                        final path = await context.push<String?>(
+                          AppRoute.photoUploadReminder,
+                        );
+                        if (path != null && mounted) {
+                          setState(() => _photoPath = path);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: AppMetrics.spaceXl),
                   ],
                 ),
               ),
-              const SizedBox(height: AppMetrics.spaceL),
-              // Skin tone selector
-              const Text(
-                'Skin Tone',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onBackground,
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppMetrics.screenPaddingHorizontal,
+                8,
+                AppMetrics.screenPaddingHorizontal,
+                20,
               ),
-              const SizedBox(height: AppMetrics.spaceS),
-              Row(
-                children: List.generate(_skinTones.length, (i) {
-                  final selected = _selectedSkinTone == i;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedSkinTone = i),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      margin: const EdgeInsets.only(right: AppMetrics.spaceS),
-                      decoration: BoxDecoration(
-                        color: _skinTones[i],
-                        shape: BoxShape.circle,
-                        border: selected
-                            ? Border.all(
-                                color: AppColors.primary,
-                                width: 3,
-                              )
-                            : null,
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(height: AppMetrics.spaceL),
-              // Photo picker
-              PhotoPickerWidget(
-                key: const ValueKey('picker_ultrasound'),
-                label: 'Upload Ultrasound Image',
-                icon: Icons.image_outlined,
-                onTap: _showComingSoon,
-              ),
-              const SizedBox(height: AppMetrics.spaceXl),
-              GradientCtaButton(
+              child: GradientCtaButton(
                 key: const ValueKey('btn_ultrasound_generate'),
-                label: 'Visualize Baby',
-                onTap: _showComingSoon,
+                label: context.l10n.viewYourBaby,
+                points: 3,
+                enabled: _photoPath != null,
+                onTap: _generate,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _GenderToggleButton extends StatelessWidget {
-
-  const _GenderToggleButton({
+class _GenderButton extends StatelessWidget {
+  const _GenderButton({
     required this.label,
     required this.isSelected,
-    required this.color,
+    required this.selectedColor,
     required this.onTap,
   });
   final String label;
   final bool isSelected;
-  final Color color;
+  final Color selectedColor;
   final VoidCallback onTap;
 
   @override
@@ -165,18 +187,26 @@ class _GenderToggleButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppMetrics.spaceS),
+          padding: const EdgeInsets.symmetric(vertical: AppMetrics.spaceM),
           decoration: BoxDecoration(
-            color: isSelected ? color.withAlpha(200) : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppMetrics.radiusPill),
+            color: isSelected
+                ? selectedColor.withAlpha(60)
+                : AppColors.surfaceVariant,
+            borderRadius: BorderRadius.circular(AppMetrics.radiusM),
+            border: isSelected
+                ? Border.all(color: selectedColor, width: 2)
+                : Border.all(color: Colors.transparent, width: 2),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? AppColors.white : AppColors.onSurfaceVariant,
+              fontSize: 15,
               fontWeight:
                   isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected
+                  ? AppColors.onBackground
+                  : AppColors.onSurfaceVariant,
             ),
           ),
         ),

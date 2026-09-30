@@ -5,6 +5,7 @@ import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/app/theme/app_metrics.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/data/repositories/baby_data_repository.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/play_on_visible_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,8 @@ final _templateListProvider =
   final repo = ref.read(babyDataRepositoryProvider);
   final allDance = await repo.getDanceTemplates();
   final allPhoto = await repo.getPhotoTemplates();
-  final all = [...allDance, ...allPhoto];
+  final allRecommends = await repo.getHomeRecommends();
+  final all = [...allRecommends, ...allDance, ...allPhoto];
   for (final cat in all) {
     if (cat.name == category) return cat.templates;
   }
@@ -48,10 +50,10 @@ class TemplateListScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (items) => items.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
-                  'No templates found',
-                  style: TextStyle(color: AppColors.onSurfaceVariant),
+                  context.l10n.noTemplatesFound,
+                  style: const TextStyle(color: AppColors.onSurfaceVariant),
                 ),
               )
             : GridView.builder(

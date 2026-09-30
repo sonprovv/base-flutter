@@ -4,6 +4,7 @@ import 'package:flutter_app_factory_base/app/router/app_router.dart';
 import 'package:flutter_app_factory_base/app/theme/app_colors.dart';
 import 'package:flutter_app_factory_base/data/models/template_item.dart';
 import 'package:flutter_app_factory_base/data/repositories/baby_data_repository.dart';
+import 'package:flutter_app_factory_base/l10n/l10n.dart';
 import 'package:flutter_app_factory_base/ui/core/widgets/template_detail_preview_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,37 +38,34 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
       final recommends = await repo.getHomeRecommends();
       final photos = await repo.getPhotoTemplates();
 
-      final allList = <TemplateItem>[];
-      final seenIds = <String>{};
-
-      for (final cat in [...recommends, ...photos]) {
-        for (final t in cat.templates) {
-          if (seenIds.add(t.id)) {
-            allList.add(t);
-          }
+      // Find the category that matches by name first, then by template ID.
+      final all = [...recommends, ...photos];
+      final targetName = widget.template.category;
+      CategoryItem? targetCat;
+      if (targetName.isNotEmpty) {
+        for (final cat in all) {
+          if (cat.name == targetName) { targetCat = cat; break; }
         }
       }
+      targetCat ??= all.firstWhere(
+        (cat) => cat.templates.any((t) => t.id == widget.template.id),
+        orElse: () => photos.isNotEmpty ? photos.first : all.first,
+      );
 
-      if (allList.isNotEmpty && mounted) {
-        final initialIndex = allList.indexWhere((t) => t.id == widget.template.id);
+      final list = targetCat.templates;
+      if (list.isNotEmpty && mounted) {
+        final initialIndex = list.indexWhere((t) => t.id == widget.template.id);
         final safeIndex = initialIndex >= 0 ? initialIndex : 0;
+        _pageController.dispose();
+        _pageController = PageController(viewportFraction: 0.82, initialPage: safeIndex);
         setState(() {
-          _items = allList;
+          _items = list;
           _currentIndex = safeIndex;
           _isLoading = false;
         });
-        if (safeIndex > 0) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_pageController.hasClients && mounted) {
-              _pageController.jumpToPage(safeIndex);
-            }
-          });
-        }
       }
     } catch (_) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -92,10 +90,12 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.onBackground,
-                      size: 26,
+                    icon: Image.asset(
+                      'assets/images/icon_back.png',
+                      width: 26,
+                      height: 26,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.arrow_back, color: AppColors.onBackground, size: 26),
                     ),
                     onPressed: () => context.pop(),
                   ),
@@ -203,9 +203,9 @@ class _PhotoDetailScreenState extends ConsumerState<PhotoDetailScreen> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      const Text(
-                        'Generate Baby Photo',
-                        style: TextStyle(
+                      Text(
+                        context.l10n.generateBabyPhoto,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
